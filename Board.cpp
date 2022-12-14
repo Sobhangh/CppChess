@@ -442,6 +442,22 @@ void Board::makeMove(const Move& move) {
             }
         }
     }
+    if(hitPiece.has_value()){
+        if (hitPiece.value() ==Piece::wr.numb() && cboard[0]!=Piece::wr.numb() && (castlingRights() & CastlingRights::WhiteQueenside) == CastlingRights::WhiteQueenside){
+            setCastlingRights(castlingRights() & ~CastlingRights::WhiteQueenside);
+        }
+        else if (hitPiece.value() ==Piece::wr.numb() && cboard[7]!=Piece::wr.numb() && (castlingRights() & CastlingRights::WhiteKingside) == CastlingRights::WhiteKingside){
+            setCastlingRights(castlingRights() & ~CastlingRights::WhiteKingside);
+        }
+        else if (hitPiece.value() ==Piece::br.numb() && cboard[56]!=Piece::br.numb() && (castlingRights() & CastlingRights::BlackQueenside) == CastlingRights::BlackQueenside){
+            setCastlingRights(castlingRights() & ~CastlingRights::BlackQueenside);
+        }
+        else if (hitPiece.value() ==Piece::br.numb() && cboard[63]!=Piece::br.numb() && (castlingRights() & CastlingRights::BlackKingside) == CastlingRights::BlackKingside){
+            setCastlingRights(castlingRights() & ~CastlingRights::BlackKingside);
+        }
+    }
+    
+
     if(turn()==PieceColor::White){
         t = PieceColor::Black;
     }
@@ -794,6 +810,7 @@ void Board::pseudoLegalMovesFrom(const Square& from,
             Board::KnightpseudoLegalMovesFrom(from,moves,p,-1,-2);
         }
         else if (p.value().type()==PieceType::King){
+
             Board::KingpseudoLegalMovesFrom(from,moves,p,1,1);
             Board::KingpseudoLegalMovesFrom(from,moves,p,1,-1);
             Board::KingpseudoLegalMovesFrom(from,moves,p,-1,1);
@@ -802,67 +819,60 @@ void Board::pseudoLegalMovesFrom(const Square& from,
             Board::KingpseudoLegalMovesFrom(from,moves,p,-1,0);
             Board::KingpseudoLegalMovesFrom(from,moves,p,0,1);
             Board::KingpseudoLegalMovesFrom(from,moves,p,0,-1);
-            if((castlingRights() & CastlingRights::WhiteKingside) == CastlingRights::WhiteKingside || (castlingRights() & CastlingRights::BlackKingside)== CastlingRights::BlackKingside){
-                    int c =0;
-                    int cp =0;
-                    int cpp = 0;
-                    if(turn()==PieceColor::White && from.rank()==0 && from.file() == 4 && (cboard[5]==0 && cboard[6]==0)){
-                        auto esq = Square::fromCoordinates(4,0);
-                        auto fsq = Square::fromCoordinates(5,0);
-                        auto gsq =Square::fromCoordinates(6,0);
-                        if(esq.has_value() && fsq.has_value() && gsq.has_value()){
-                            c= Board::inCheck(Board::turn(),esq.value());
-                            cp = Board::inCheck(Board::turn(),fsq.value());
-                            cpp =Board::inCheck(Board::turn(),gsq.value());
-                        }
-                   
-                    }
-                    else if (turn()==PieceColor::Black && from.rank()==7 && from.file() == 4 && (cboard[61]==0 && cboard[62]==0)){
-                        auto esq = Square::fromCoordinates(4,7);
-                        auto fsq = Square::fromCoordinates(5,7);
-                        auto gsq =Square::fromCoordinates(6,7);
-                        if(esq.has_value() && fsq.has_value() && gsq.has_value()){
-                            c= Board::inCheck(Board::turn(),esq.value());
-                            cp = Board::inCheck(Board::turn(),fsq.value());
-                            cpp =Board::inCheck(Board::turn(),gsq.value());
-                        }
-                    }
-                    if(c==-1 && cp==-1 && cpp==-1){
-                        moves.push_back(Move::Move(from,Square::fromCoordinates(6,from.rank()).value()));
-                    }
-                
+            
+            int c =0;
+            int cp =0;
+            int cpp = 0;
+            if(turn()==PieceColor::White && from.rank()==0 && from.file() == 4 && (cboard[5]==0 && cboard[6]==0) && (castlingRights() & CastlingRights::WhiteKingside) == CastlingRights::WhiteKingside){
+                auto esq = Square::fromCoordinates(4,0);
+                auto fsq = Square::fromCoordinates(5,0);
+                auto gsq =Square::fromCoordinates(6,0);
+                if(esq.has_value() && fsq.has_value() && gsq.has_value()){
+                    c= Board::inCheck(Board::turn(),esq.value());
+                    cp = Board::inCheck(Board::turn(),fsq.value());
+                    cpp =Board::inCheck(Board::turn(),gsq.value());
+                }
+        
             }
-            if((castlingRights() & CastlingRights::WhiteQueenside)  == CastlingRights::WhiteQueenside || (castlingRights() & CastlingRights::BlackQueenside) == CastlingRights::BlackQueenside){
-                
-                    int c =0;
-                    int cp =0;
-                    int cpp = 0;
-                    if(turn()==PieceColor::White && from.rank()==0 && from.file() == 4 && (cboard[1]==0 && cboard[2]==0 && cboard[3]==0) ){
-                        auto csq = Square::fromCoordinates(2,0);
-                        auto dsq = Square::fromCoordinates(3,0);
-                        auto esq = Square::fromCoordinates(4,0);
-                        if(esq.has_value() && dsq.has_value() && csq.has_value()){
-                            c= Board::inCheck(Board::turn(),esq.value());
-                            cp = Board::inCheck(Board::turn(),dsq.value());
-                            cpp =Board::inCheck(Board::turn(),csq.value());
-                        }
-                    }
-                    else if (turn()==PieceColor::Black && from.rank()==7 && from.file() == 4 && (cboard[57]==0 && cboard[58]==0 && cboard[59]==0)){
-                        auto csq = Square::fromCoordinates(2,7);
-                        auto dsq = Square::fromCoordinates(3,7);
-                        auto esq = Square::fromCoordinates(4,7);
-                        if(esq.has_value() && dsq.has_value() && csq.has_value()){
-                            c= Board::inCheck(Board::turn(),esq.value());
-                            cp = Board::inCheck(Board::turn(),dsq.value());
-                            cpp =Board::inCheck(Board::turn(),csq.value());
-                        }
-                    }
-                    if(c==-1 && cp==-1 && cpp==-1  ){
-                        moves.push_back(Move::Move(from,Square::fromCoordinates(2,from.rank()).value()));
-                    }
-                    
-                
+            else if (turn()==PieceColor::Black && from.rank()==7 && from.file() == 4 && (cboard[61]==0 && cboard[62]==0) && (castlingRights() & CastlingRights::BlackKingside)== CastlingRights::BlackKingside){
+                auto esq = Square::fromCoordinates(4,7);
+                auto fsq = Square::fromCoordinates(5,7);
+                auto gsq =Square::fromCoordinates(6,7);
+                if(esq.has_value() && fsq.has_value() && gsq.has_value()){
+                    c= Board::inCheck(Board::turn(),esq.value());
+                    cp = Board::inCheck(Board::turn(),fsq.value());
+                    cpp =Board::inCheck(Board::turn(),gsq.value());
+                }
             }
+            if(c==-1 && cp==-1 && cpp==-1){
+                moves.push_back(Move::Move(from,Square::fromCoordinates(6,from.rank()).value()));
+            }
+            c=0;
+            cp=0;
+            cpp=0;
+            if(turn()==PieceColor::White && from.rank()==0 && from.file() == 4 && (cboard[1]==0 && cboard[2]==0 && cboard[3]==0) && (castlingRights() & CastlingRights::WhiteQueenside)  == CastlingRights::WhiteQueenside ){
+                auto csq = Square::fromCoordinates(2,0);
+                auto dsq = Square::fromCoordinates(3,0);
+                auto esq = Square::fromCoordinates(4,0);
+                if(esq.has_value() && dsq.has_value() && csq.has_value()){
+                    c= Board::inCheck(Board::turn(),esq.value());
+                    cp = Board::inCheck(Board::turn(),dsq.value());
+                    cpp =Board::inCheck(Board::turn(),csq.value());
+                }
+            }
+            else if (turn()==PieceColor::Black && from.rank()==7 && from.file() == 4 && (cboard[57]==0 && cboard[58]==0 && cboard[59]==0) && (castlingRights() & CastlingRights::BlackQueenside) == CastlingRights::BlackQueenside){
+                auto csq = Square::fromCoordinates(2,7);
+                auto dsq = Square::fromCoordinates(3,7);
+                auto esq = Square::fromCoordinates(4,7);
+                if(esq.has_value() && dsq.has_value() && csq.has_value()){
+                    c= Board::inCheck(Board::turn(),esq.value());
+                    cp = Board::inCheck(Board::turn(),dsq.value());
+                    cpp =Board::inCheck(Board::turn(),csq.value());
+                }
+            }
+            if(c==-1 && cp==-1 && cpp==-1  ){
+                moves.push_back(Move::Move(from,Square::fromCoordinates(2,from.rank()).value()));
+            } 
         }
    }
 }
