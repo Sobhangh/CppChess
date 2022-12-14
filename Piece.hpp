@@ -33,6 +33,7 @@ public:
     static const Piece wk, bk, wq,bq,wr,br,wb,bb,wn,bn,wp,bp;
     int numb() const;
     static PieceColor getColor(int num) ;
+    static int getNumEven(PieceColor c);
     //static PieceType getType(int num) ;
 private:
     PieceColor c;

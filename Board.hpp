@@ -19,13 +19,15 @@ public:
     using nOp = std::optional<int>;
 
     Board();
-    ~Board();
+    //~Board();
     void setPiece(const Square& square, const Piece::Optional& piece);
     void setPiecen(const Square& square, const int piece);
     void replacePiecen(const Square& from, const Square& to, const int piece);
     void removePiecen(const Square& square, const int piece);
     Piece::Optional piece(const Square& square) const;
     nOp piecen(const Square& square) const;
+    int inCheck(PieceColor t,Square& s) const;
+
     void setTurn(PieceColor turn);
     PieceColor turn() const;
     void setCastlingRights(CastlingRights cr);
@@ -39,6 +41,7 @@ public:
     void pseudoLegalMovesFrom(const Square& from, MoveVec& moves) const;
     void PawnpseudoLegalMovesFrom(const Square& from, MoveVec& moves,Piece::Optional& p,const int d) const;
     void BishoppseudoLegalMovesFrom(const Square& from, MoveVec& moves,Piece::Optional& p,const int n,const int e) const;
+    void KingpseudoLegalMovesFrom(const Square& from, MoveVec& moves,Piece::Optional& p,const int n,const int e) const;
     void KnightpseudoLegalMovesFrom(const Square& from, MoveVec& moves,Piece::Optional& p,const int h,const int v) const;
 
 private:
@@ -46,6 +49,7 @@ private:
         PieceColor t;
         CastlingRights cr;
         Square::Optional EPSquare;
+        std::vector<int> cboard;
         /**
         static const int wk = 0;
         static const int bk = 1;

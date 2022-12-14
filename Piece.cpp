@@ -14,6 +14,14 @@ PieceColor Piece::getColor(int num){
     return PieceColor::Black;
 }
 
+//Returns the modulo of the number by 2
+int Piece::getNumEven(PieceColor c){
+    if(c ==PieceColor::White){
+        return 1;
+    }
+    return 0;
+}
+
 int Piece::getNum(PieceColor color, PieceType type){
     if(color == PieceColor::White){
         if(type == PieceType::Pawn){
