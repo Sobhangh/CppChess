@@ -15,10 +15,12 @@ public:
     static Optional fromCoordinates(Coordinate file, Coordinate rank);
     static Optional fromIndex(Index index);
     static Optional fromName(const std::string& name);
+    static int HammingDist(const Square& x,const Square& y);
 
     Coordinate file() const;
     Coordinate rank() const;
     Index index() const;
+    std::string getName() const;
 
     static const Square A1, B1, C1, D1, E1, F1, G1, H1;
     static const Square A2, B2, C2, D2, E2, F2, G2, H2;
@@ -30,7 +32,11 @@ public:
     static const Square A8, B8, C8, D8, E8, F8, G8, H8;
 
 private:
+//Columns (called files) are labeled a through h while rows (called ranks) are labeled 1 through 8.
 
+    Index i;
+    Coordinate f;
+    Coordinate r;
     Square(Index index);
 };
 

@@ -26,9 +26,18 @@ public:
     Piece(PieceColor color, PieceType type);
 
     static Optional fromSymbol(char symbol);
-
+    static char typeChar(PieceType t);
     PieceColor color() const;
     PieceType type() const;
+    static int getNum(PieceColor color, PieceType type);
+    static const Piece wk, bk, wq,bq,wr,br,wb,bb,wn,bn,wp,bp;
+    int numb() const;
+    static PieceColor getColor(int num) ;
+    //static PieceType getType(int num) ;
+private:
+    PieceColor c;
+    PieceType t;
+    int num;
 };
 
 bool operator==(const Piece& lhs, const Piece& rhs);
