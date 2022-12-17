@@ -166,24 +166,25 @@ class myEngine: public Engine{
         return false;
     }
 
-    bool comp(Move& a,Move& b){
-        if(a.promotion().has_value() && !b.promotion().has_value()){
-            return true;
+    static int distance(int fromr,int fromf, int tor,int tof, int piece){
+        if(piece<1 || piece>12){
+            return 0;
         }
-        if(b.promotion().has_value() && !a.promotion().has_value()){
-            return false;
+        int h = std::abs((int)(fromr - tor));
+        int w = std::abs((int)(fromf - tof));
+        if(piece == Piece::wn.numb() || piece == Piece::bn.numb()){
+            return h+w;
         }
-        if(a.promotion().has_value() && b.promotion().has_value()){
-            if(a.promotion().value() == PieceType::Queen && b.promotion().value() != PieceType::Queen){
-                return true;
-            }
-            return false;
+        if(w==0){
+            return h;
         }
-        if(Square::HammingDist(a.from(),a.to())> Square::HammingDist(b.from(),b.to())){
-            return true;
+        if(h==0){
+            return w;
         }
-        return false;
+        return h;
     }
+
+    //int surroudning
     //give the color: if move is towards the other side then it is better than towrards your own side
     void orderMoves(std::vector<Move>& boardVc, PieceColor c,std::vector<int> cb){
         std::sort(boardVc.begin(),boardVc.end(),[c,cb](Move& a,Move& b){
@@ -217,7 +218,10 @@ class myEngine: public Engine{
             int cdb = std::abs((int)b.to().rank()-2);
             score+= cdb-cda;
         }
-        score += (Square::HammingDist(a.from(),a.to())- Square::HammingDist(b.from(),b.to()));
+        int pieca= cb[a.from().index()];
+        int piecb = cb[b.from().index()];
+        score += (distance(a.from().rank(),a.from().file(),a.to().rank(),a.to().file(),pieca)- distance(b.from().rank(),b.from().file(),b.to().rank(),b.to().file(),piecb));
+        //score += (Square::HammingDist(a.from(),a.to())- Square::HammingDist(b.from(),b.to()));
         /**if(Square::HammingDist(a.from(),a.to())> Square::HammingDist(b.from(),b.to())){
 
             return true;
@@ -259,69 +263,69 @@ class myEngine: public Engine{
             int i=1;
             while(i<=12){
                 if(i==Piece::wp.numb()){
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size());
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size())*2;
                 }
                 else if (i==Piece::wn.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 3;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
                 }
                 else if (i==Piece::wb.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 8;
                 }
                 else if (i==Piece::wr.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 8;
                 }
                 else if (i==Piece::wq.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 9;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 18;
                 }
                 
                 i+=2;
             }
-            b.setTurn(PieceColor::Black);
+            /**b.setTurn(PieceColor::Black);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
             score -= (opmobility.size())/2;
             b.setTurn(PieceColor::White);
             auto mobility = std::vector<Move>();
             generateMoves(mobility,b);
-            score += (mobility.size())/2;
+            score += (mobility.size())/2;*/
         }
         else{
             int i=2;
             while(i<=12){
                 if(i==Piece::bp.numb()){
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size());
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size())*2;
                 }
                 else if (i==Piece::bn.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 3;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 5;
                 }
                 else if (i==Piece::bb.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 5;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 8;
                 }
                 else if (i==Piece::br.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 5;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 8;
                 }
                 else if (i==Piece::bq.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 9;
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 18;
                 }
                 
                 i+=2;
             }
-            b.setTurn(PieceColor::White);
+            /**b.setTurn(PieceColor::White);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
             score -= (opmobility.size())/2;
             b.setTurn(PieceColor::Black);
             auto mobility = std::vector<Move>();
             generateMoves(mobility,b);
-            score += (mobility.size())/2;
+            score += (mobility.size())/2;*/
         }
         return score;
 
