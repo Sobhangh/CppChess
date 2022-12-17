@@ -36,6 +36,11 @@ class myEngine: public Engine{
         auto b =  Board(board);
         auto ngmx = negamax(b,5,-1*INF,INF,1);
         auto p = PrincipalVariation();
+        /**auto v = Board::MoveVec();
+        for(auto it=std::get<0>(ngmx).size()-1;it>=0;--it){
+            v.push_back(std::get<0>(ngmx)[it]);
+        }*/
+        std::reverse(std::get<0>(ngmx).begin(),std::get<0>(ngmx).end());
         p.makeMoveVc(std::get<0>(ngmx));
         if(std::get<1>(ngmx) == -1*INF ){ //|| std::get<1>(ngmx) == INF
             p.setMate(true);
