@@ -99,9 +99,10 @@ class myEngine: public Engine{
                 //if(v != -1 * CHECK && v != -1* INF ){
                 //    allcheck =false;
                 //}
-                value= std::max(value,v);
-                if(value== v){
-                    pvmax =pv;
+                //value= std::max(value,v);
+                if(v>value){
+                    value = v;
+                    pvmax =std::make_tuple(std::get<0>(pv),v);
                     std::get<0>(pvmax).push_back(child);
                 }
                 a= std::max(a, value);
@@ -200,34 +201,21 @@ class myEngine: public Engine{
         }
         int score =0;
         if(cb[a.to().index()] >  cb[b.to().index()]){
-            score += (1+cb[a.to().index()]/2);
+            score += (cb[a.to().index()]);
         }
         else if(cb[a.to().index()] <  cb[b.to().index()]){
-            score -= (1+cb[b.to().index()]/2);
+            score -= (cb[b.to().index()]);
         }
 
         if(c == PieceColor::White){
-            if(a.to().rank()>b.to().rank()){
-                score+= (a.to().rank()-b.to().rank());
-                //return true;
-            }
-            else if (b.to().rank()>a.to().rank())
-            {
-                score+= (a.to().rank()-b.to().rank());
-                //return false;
-            }
-            
+            int cda = std::abs((int)a.to().rank()-5);
+            int cdb = std::abs((int)b.to().rank()-5);
+            score+= cdb-cda;
         }
         else{
-            if(a.to().rank()<b.to().rank()){
-                score+= (b.to().rank()-a.to().rank());
-                //return true;
-            }
-            else if (b.to().rank()<a.to().rank())
-            {
-                score+= (b.to().rank()-a.to().rank());
-                //return false;
-            }
+            int cda = std::abs((int)a.to().rank()-2);
+            int cdb = std::abs((int)b.to().rank()-2);
+            score+= cdb-cda;
         }
         score += (Square::HammingDist(a.from(),a.to())- Square::HammingDist(b.from(),b.to()));
         /**if(Square::HammingDist(a.from(),a.to())> Square::HammingDist(b.from(),b.to())){
@@ -267,31 +255,59 @@ class myEngine: public Engine{
             }
         }
         
-        
-        int i=1;
-        while(i<=12){
-            if(i==Piece::wp.numb()){
-                score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size());
+        if(c==PieceColor::White){
+            int i=1;
+            while(i<=12){
+                if(i==Piece::wp.numb()){
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size());
+                }
+                else if (i==Piece::wn.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 3;
+                }
+                else if (i==Piece::wb.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
+                }
+                else if (i==Piece::wr.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
+                }
+                else if (i==Piece::wq.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 9;
+                }
+                
+                i+=2;
             }
-            else if (i==Piece::wn.numb())
-            {
-                score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 3;
-            }
-            else if (i==Piece::wb.numb())
-            {
-                score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 3;
-            }
-            else if (i==Piece::wr.numb())
-            {
-                score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
-            }
-            else if (i==Piece::wq.numb())
-            {
-                score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 9;
-            }
-            
-            i+=2;
         }
+        else{
+            int i=2;
+            while(i<=12){
+                if(i==Piece::bp.numb()){
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size());
+                }
+                else if (i==Piece::bn.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 3;
+                }
+                else if (i==Piece::bb.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 5;
+                }
+                else if (i==Piece::br.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 5;
+                }
+                else if (i==Piece::bq.numb())
+                {
+                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 9;
+                }
+                
+                i+=2;
+            }
+        }
+       
         return score;
 
     }
