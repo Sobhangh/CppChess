@@ -25,11 +25,11 @@ Move::Optional Move::fromUci(const std::string& uci) {
         if(uci.length()==5){
             if(Piece::fromSymbol(uci[4]).has_value()){
                 std::optional<PieceType> pr = Piece::fromSymbol(uci[4]).value().type();
-                return Move::Move(Fr,To,pr);
+                return Move(Fr,To,pr);
             }
              return std::nullopt;
         }
-        return Move::Move(Fr,To);
+        return Move(Fr,To);
     }
     
     
