@@ -280,6 +280,14 @@ class myEngine: public Engine{
                 
                 i+=2;
             }
+            b.setTurn(PieceColor::Black);
+            auto opmobility = std::vector<Move>();
+            generateMoves(opmobility,b);
+            score -= (opmobility.size())/2;
+            b.setTurn(PieceColor::White);
+            auto mobility = std::vector<Move>();
+            generateMoves(mobility,b);
+            score += (mobility.size())/2;
         }
         else{
             int i=2;
@@ -306,8 +314,15 @@ class myEngine: public Engine{
                 
                 i+=2;
             }
+            b.setTurn(PieceColor::White);
+            auto opmobility = std::vector<Move>();
+            generateMoves(opmobility,b);
+            score -= (opmobility.size())/2;
+            b.setTurn(PieceColor::Black);
+            auto mobility = std::vector<Move>();
+            generateMoves(mobility,b);
+            score += (mobility.size())/2;
         }
-       
         return score;
 
     }
