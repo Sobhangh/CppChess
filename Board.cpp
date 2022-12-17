@@ -277,8 +277,8 @@ Square::Optional Board::enPassantSquare() const {
 }
 
 void Board::makeMove(const Move& move) {
-    auto fromi = move.from().index();
-    auto toi = move.to().index();
+    int fromi = move.from().index();
+    int toi = move.to().index();
     auto movedPiece = Board::piecen(fromi);
     if(!movedPiece.has_value()){
         return;
@@ -294,8 +294,8 @@ void Board::makeMove(const Move& move) {
     }
     else{
         if(movedPiece.value() ==Piece::wp.numb() || movedPiece.value() ==Piece::bp.numb() ){
-            auto dif = move.to().rank() - move.from().rank();
-            auto fdif = move.from().file() - move.to().file();
+            int dif = move.to().rank() - move.from().rank();
+            int fdif = move.from().file() - move.to().file();
             if(dif == 2 && fdif ==0){
                 setEnPassantSquare(Square::fromCoordinates(move.from().file(),2).value());
             }
@@ -442,30 +442,30 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     auto front = Square::fromCoordinates(from.file(),from.rank()+d).value();
                     //auto front = getIndx(from.rank()+d,from.file());
                     if(!Board::piecen(front.index()).has_value()){
-                        moves.push_back(Move::Move(from,front));
+                        moves.push_back(Move(from,front));
                         auto frontp = Square::fromCoordinates(from.file(),from.rank()+2*d).value();
                         if(!Board::piecen(frontp.index()).has_value()){
-                             moves.push_back(Move::Move(from,frontp));
+                             moves.push_back(Move(from,frontp));
                         }
                     }
                 }
                 if(from.rank()==end){
                     auto front = Square::fromCoordinates(from.file(),from.rank()+d).value();
                     if(!Board::piecen(front.index()).has_value()){
-                        moves.push_back(Move::Move(from,front,PieceType::Queen));
-                        moves.push_back(Move::Move(from,front,PieceType::Rook));
-                        moves.push_back(Move::Move(from,front,PieceType::Bishop));
-                        moves.push_back(Move::Move(from,front,PieceType::Knight)); 
+                        moves.push_back( Move(from,front,PieceType::Queen));
+                        moves.push_back( Move(from,front,PieceType::Rook));
+                        moves.push_back( Move(from,front,PieceType::Bishop));
+                        moves.push_back( Move(from,front,PieceType::Knight)); 
                     }
                     auto frontl = Square::fromCoordinates(from.file()-1,from.rank()+d);
                     if(frontl.has_value()){
                         auto frontp = Board::piecen(frontl.value().index());
                         if(frontp.has_value()){
                             if(Piece::getColor(frontp.value()) !=p.value().color() && (frontp.value() != Piece::wk.numb() || frontp.value() != Piece::bk.numb())){
-                                moves.push_back(Move::Move(from,frontl.value(),PieceType::Queen));
-                                moves.push_back(Move::Move(from,frontl.value(),PieceType::Rook));
-                                moves.push_back(Move::Move(from,frontl.value(),PieceType::Bishop));
-                                moves.push_back(Move::Move(from,frontl.value(),PieceType::Knight)); 
+                                moves.push_back( Move(from,frontl.value(),PieceType::Queen));
+                                moves.push_back( Move(from,frontl.value(),PieceType::Rook));
+                                moves.push_back( Move(from,frontl.value(),PieceType::Bishop));
+                                moves.push_back( Move(from,frontl.value(),PieceType::Knight)); 
                             }
                             
                         }
@@ -475,10 +475,10 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                         auto frontp = Board::piecen(frontr.value().index());
                         if(frontp.has_value()){
                             if(Piece::getColor(frontp.value())!=p.value().color() && (frontp.value() != Piece::wk.numb() || frontp.value() != Piece::bk.numb())){
-                                moves.push_back(Move::Move(from,frontr.value(),PieceType::Queen));
-                                moves.push_back(Move::Move(from,frontr.value(),PieceType::Rook));
-                                moves.push_back(Move::Move(from,frontr.value(),PieceType::Bishop));
-                                moves.push_back(Move::Move(from,frontr.value(),PieceType::Knight));
+                                moves.push_back( Move(from,frontr.value(),PieceType::Queen));
+                                moves.push_back( Move(from,frontr.value(),PieceType::Rook));
+                                moves.push_back( Move(from,frontr.value(),PieceType::Bishop));
+                                moves.push_back( Move(from,frontr.value(),PieceType::Knight));
                             }
                         }
                     }
@@ -492,18 +492,18 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     auto rp = Board::piecen(frontr.value().index());
                     if(frontr.value()==Board::enPassantSquare()){
                         if(p.value().color() == PieceColor::White && frontr.value().rank() == 5){
-                            moves.push_back(Move::Move(from,frontr.value()));
+                            moves.push_back( Move(from,frontr.value()));
                         }
                         else if (p.value().color() == PieceColor::Black && frontr.value().rank() == 2)
                         {
-                            moves.push_back(Move::Move(from,frontr.value()));
+                            moves.push_back( Move(from,frontr.value()));
                         }
                         
                         
                     }
                     else if (rp.has_value() && Piece::getColor(rp.value()) != p.value().color() && (rp.value() != Piece::wk.numb() || rp.value() != Piece::bk.numb()))
                     {
-                        moves.push_back(Move::Move(from,frontr.value()));
+                        moves.push_back( Move(from,frontr.value()));
                     }
                     
                 }
@@ -511,21 +511,21 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     auto lp = Board::piecen(frontl.value().index());
                     if(frontl.value()==Board::enPassantSquare()){
                         if(p.value().color() == PieceColor::White && frontl.value().rank() == 5){
-                            moves.push_back(Move::Move(from,frontl.value()));
+                            moves.push_back( Move(from,frontl.value()));
                         }
                         else if (p.value().color() == PieceColor::Black && frontl.value().rank() == 2)
                         {
-                            moves.push_back(Move::Move(from,frontl.value()));
+                            moves.push_back( Move(from,frontl.value()));
                         }
                     }
                     else if (lp.has_value() && Piece::getColor(lp.value()) != p.value().color() && (lp.value() != Piece::wk.numb() || lp.value() != Piece::bk.numb()))
                     {
-                        moves.push_back(Move::Move(from,frontl.value()));
+                        moves.push_back( Move(from,frontl.value()));
                     }
                 }
                 if(front.has_value() && from.rank()!=start){
                     if(!Board::piecen(front.value().index()).has_value()){
-                        moves.push_back(Move::Move(from,front.value()));
+                        moves.push_back( Move(from,front.value()));
                     }
                 }
 
@@ -538,10 +538,10 @@ void Board::KingpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,P
     }
     auto np = Board::piecen(next.value().index());
     if(!np.has_value()){
-        moves.push_back(Move::Move(from,next.value()));
+        moves.push_back( Move(from,next.value()));
     }
     else if(Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb())){
-        moves.push_back(Move::Move(from,next.value()));
+        moves.push_back( Move(from,next.value()));
     }
 }
 
@@ -555,7 +555,7 @@ void Board::BishoppseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
     auto np = Board::piecen(next.value().index());
     while(!np.has_value()){
 
-         moves.push_back(Move::Move(from,next.value()));
+         moves.push_back( Move(from,next.value()));
         //i+=1;
         next = Square::fromCoordinates(next.value().file()+e,next.value().rank()+n);
         if(!next.has_value()){
@@ -564,7 +564,7 @@ void Board::BishoppseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
         np = Board::piecen(next.value().index());
     }
     if(next.has_value() && Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb())){
-        moves.push_back(Move::Move(from,next.value()));
+        moves.push_back( Move(from,next.value()));
     }
 }
 
@@ -575,7 +575,7 @@ void Board::KnightpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
     }
     auto np = Board::piecen(next.value().index());
     if(!np.has_value() || (Piece::getColor(np.value())!=p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb()))){
-        moves.push_back(Move::Move(from,next.value()));
+        moves.push_back( Move(from,next.value()));
     }
 }
 
@@ -764,7 +764,7 @@ void Board::pseudoLegalMovesFrom(const Square& from,
                 }
             }
             if(c==-1 && cp==-1 && cpp==-1){
-                moves.push_back(Move::Move(from,Square::fromCoordinates(6,from.rank()).value()));
+                moves.push_back( Move(from,Square::fromCoordinates(6,from.rank()).value()));
             }
             c=0;
             cp=0;
@@ -790,7 +790,7 @@ void Board::pseudoLegalMovesFrom(const Square& from,
                 }
             }
             if(c==-1 && cp==-1 && cpp==-1  ){
-                moves.push_back(Move::Move(from,Square::fromCoordinates(2,from.rank()).value()));
+                moves.push_back( Move(from,Square::fromCoordinates(2,from.rank()).value()));
             } 
         }
    }
