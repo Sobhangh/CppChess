@@ -21,12 +21,13 @@ public:
     Board();
     //~Board();
     void setPiece(const Square& square, const Piece::Optional& piece);
-    void setPiecen(const Square& square, const int piece);
-    void replacePiecen(const Square& from, const Square& to, const int piece);
-    void removePiecen(const Square& square, const int piece);
+    void setPiecen(const int square, const int piece);
+    void replacePiecen(const int from, const int to, const int piece);
+    void removePiecen(const int square, const int piece);
     Piece::Optional piece(const Square& square) const;
-    nOp piecen(const Square& square) const;
+    nOp piecen(const int square) const;
     int inCheck(PieceColor t,Square& s) const;
+    bool inCheckMate(PieceColor t,Square& s) const;
 
     void setTurn(PieceColor turn);
     PieceColor turn() const;
@@ -34,8 +35,11 @@ public:
     CastlingRights castlingRights() const;
     void setEnPassantSquare(const Square::Optional& square);
     Square::Optional enPassantSquare() const;
-    std::map<const int, std::vector<Square*>> getBoard() const;
+    std::map<const int, std::vector<int>> getBoard() const;
+    std::vector<int> getcBoard() const;
     void makeMove(const Move& move);
+    int getHScore();
+    void setHScore(int s);
 
     void pseudoLegalMoves(MoveVec& moves) const;
     void pseudoLegalMovesFrom(const Square& from, MoveVec& moves) const;
@@ -45,11 +49,12 @@ public:
     void KnightpseudoLegalMovesFrom(const Square& from, MoveVec& moves,Piece::Optional& p,const int h,const int v) const;
 
 private:
-        std::map<const int, std::vector<Square*>> board;
+        std::map<const int, std::vector<int>> board;
         PieceColor t;
         CastlingRights cr;
         Square::Optional EPSquare;
         std::vector<int> cboard;
+        int hscore;
         /**
         static const int wk = 0;
         static const int bk = 1;

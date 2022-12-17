@@ -30,8 +30,8 @@ public:
         const TimeInfo::Optional& timeInfo = std::nullopt
     ) = 0;
 
-    virtual std::optional<HashInfo> hashInfo() const;
-    virtual void setHashSize(std::size_t size);
+    virtual std::optional<HashInfo> hashInfo() const=0;
+    virtual void setHashSize(std::size_t size)=0;
 };
 
 #endif

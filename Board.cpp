@@ -7,29 +7,30 @@
 #include "Piece.hpp"
 #include "Square.hpp"
 #include <cmath>
-
+int getIndx(int rank,int file);
+bool validIndx(int indx);
 Board::Board():t(PieceColor::White),
                 cr(CastlingRights::All),
                 EPSquare(std::nullopt),
                 cboard(64,0)
 {
-    board[Piece::wk.numb()]=std::vector<Square*> {};
-    board[Piece::bk.numb()]=std::vector<Square*> {};
+    board[Piece::wk.numb()]=std::vector<int> {};
+    board[Piece::bk.numb()]=std::vector<int> {};
 
-    board[Piece::wq.numb()]=std::vector<Square*> {};
-    board[Piece::bq.numb()]=std::vector<Square*> {};
+    board[Piece::wq.numb()]=std::vector<int> {};
+    board[Piece::bq.numb()]=std::vector<int> {};
 
-    board[Piece::wb.numb()]=std::vector<Square*> {};
-    board[Piece::bb.numb()]=std::vector<Square*> {};
+    board[Piece::wb.numb()]=std::vector<int> {};
+    board[Piece::bb.numb()]=std::vector<int> {};
 
-    board[Piece::wn.numb()]=std::vector<Square*> {};
-    board[Piece::bn.numb()]=std::vector<Square*> {};
+    board[Piece::wn.numb()]=std::vector<int> {};
+    board[Piece::bn.numb()]=std::vector<int> {};
 
-    board[Piece::wr.numb()]=std::vector<Square*> {};
-    board[Piece::br.numb()]=std::vector<Square*> {};
+    board[Piece::wr.numb()]=std::vector<int> {};
+    board[Piece::br.numb()]=std::vector<int> {};
 
-    board[Piece::wp.numb()]=std::vector<Square*> {};
-    board[Piece::bp.numb()]=std::vector<Square*> {};
+    board[Piece::wp.numb()]=std::vector<int> {};
+    board[Piece::bp.numb()]=std::vector<int> {};
     /**
     board[Piece::wk.numb()]=std::vector<Square*> {new Square(Square::E1)};
     board[Piece::bk.numb()]=std::vector<Square*> {new Square(Square::E8)};
@@ -63,15 +64,30 @@ Board::Board():t(PieceColor::White),
     }
 }*/
 
+
+int getIndx(int rank,int file){
+    if(file<0 || file>=8){
+        return -1;
+    }
+    return rank*8 + file;
+}
+
+bool validIndx(int indx){
+    if(indx<0 || indx>=64){
+        return false;
+    }
+    return true;
+}
 // TO BE OPTIMIZED
 void Board::setPiece(const Square& square, const Piece::Optional& piece) {
    if(piece.has_value()){
-        cboard[square.rank()*8 + square.file()] = piece.value().numb();
+        auto indx = square.index();
+        cboard[indx] = piece.value().numb();
         bool added =false;
         bool removed =false;
         for(auto it = board.begin(); it != board.end();++it){
             if(!added && piece.value().numb() == (it->first)){
-                board[it->first].push_back(new Square(square));
+                board[it->first].push_back(indx);
                 added = true;
                 if(removed){
                     return;
@@ -82,10 +98,10 @@ void Board::setPiece(const Square& square, const Piece::Optional& piece) {
                 unsigned int vecSize = (it->second).size();
                 for(unsigned int i = 0; i < vecSize; i++)
                 {
-                    if(*(it->second)[i]==square){
-                        auto e = (it->second)[i];
+                    if((it->second)[i]==(int)indx){
+                        //auto e = (it->second)[i];
                         (it->second).erase((it->second).begin()+i);
-                        delete e;
+                        //delete e;
                         removed = true;
                         break;
                     }
@@ -97,18 +113,18 @@ void Board::setPiece(const Square& square, const Piece::Optional& piece) {
             
         }
         if(!added){
-            board[piece.value().numb()]= std::vector<Square*> {new Square(square)};
+            board[piece.value().numb()] = std::vector<int> {(int)indx};
         }
         
    }
 }
 
-void Board::setPiecen(const Square& square, const int piece){
+void Board::setPiecen(const int square, const int piece){
     if(piece>12 || piece<1){
         return;
     }
-    cboard[square.rank()*8 + square.file()] = piece;
-    board[piece].push_back(new Square(square));
+    cboard[square] = piece;
+    board[piece].push_back(square);
     /**
     for(auto it = board.begin(); it != board.end();++it){
         if(piece == (it->first)){
@@ -119,42 +135,42 @@ void Board::setPiecen(const Square& square, const int piece){
     board[piece]= std::vector<Square*> {new Square(square)};*/
 }
 
-void Board::removePiecen(const Square& square, const int piece){
+void Board::removePiecen(const int square, const int piece){
     if(piece>12 || piece<1){
         return;
     }
-    auto pos = square.rank()*8 + square.file();
     //auto p = cboard[pos];
-    cboard[pos] = 0;
+    cboard[square] = 0;
     unsigned int vecSize = board[piece].size();
     for(unsigned int i = 0; i < vecSize; i++)
     {
-        if(*board[piece][i]==square){
-            auto e = board[piece][i];
+        if(board[piece][i]==square){
+            //auto e = board[piece][i];
             board[piece].erase(board[piece].begin()+i);
-            delete e;
+            //delete e;
             return;
         }
     }
 }
 
-void Board::replacePiecen(const Square& from,const Square& to, const int piece){
+//from and to are indexes of the squares
+void Board::replacePiecen(const int from,const int to, const int piece){
     if(piece>12 || piece<1){
         return;
     }
-    cboard[to.rank()*8 + to.file()] = piece;
-    cboard[from.rank()*8 + from.file()] = 0;
+    cboard[to] = piece;
+    cboard[from] = 0;
     unsigned int vecSize = board[piece].size();
     for(unsigned int i = 0; i < vecSize; i++)
     {
-        if(*board[piece][i]==from){
-            auto e = board[piece][i];
-            board[piece][i] = new Square(to);
-            delete e;
+        if(board[piece][i]==from){
+            //auto e = board[piece][i];
+            board[piece][i] = to;
+            //delete e;
             return;
         }
     }
-    board[piece].push_back(new Square(to));
+    board[piece].push_back(to);
     return;
 
     /**for(auto it = board.begin(); it != board.end();++it){
@@ -163,24 +179,15 @@ void Board::replacePiecen(const Square& from,const Square& to, const int piece){
         }
     }*/
 }
-Board::nOp Board::piecen(const Square& square) const{
-    auto p = cboard[square.rank()*8 + square.file()] ;
+
+//index of the square
+Board::nOp Board::piecen(const int square) const{
+    auto p = cboard[square] ;
     if(p == 0){
         return std::nullopt;
     }
     return p;
-    /**
-    for(auto it = board.begin(); it != board.end();++it){
-            unsigned int vecSize = (it->second).size();
-            for(unsigned int i = 0; i < vecSize; i++)
-            {
-                if(*(it->second)[i]==square){
-                    return (it->first);
-                }
-            }
-    }
-    return std::nullopt;
-    */
+
 }
 
 Piece::Optional Board::piece(const Square& square) const {
@@ -243,67 +250,6 @@ Piece::Optional Board::piece(const Square& square) const {
                         
     }
                      
-    /**for(auto it = board.begin(); it != board.end();++it){
-            unsigned int vecSize = (it->second).size();
-            for(unsigned int i = 0; i < vecSize; i++)
-            {
-                if(*(it->second)[i]==square){
-                    if(it->first % 2 ==1){
-                        if(it->first ==1){
-                            return Piece::wp;
-                        }
-                        else if (it->first ==3)
-                        {
-                            return Piece::wn;   
-                        }
-                        else if (it->first ==5)
-                        {
-                            return Piece::wb;   
-                        }
-                        else if (it->first ==7)
-                        {
-                            return Piece::wr;   
-                        }
-                        else if (it->first ==9)
-                        {
-                            return Piece::wq;   
-                        }
-                        else if (it->first ==11)
-                        {
-                            return Piece::wk;   
-                        }
-                        
-                    }
-                    else{
-                        if(it->first ==2){
-                            return Piece::bp;
-                        }
-                        else if (it->first ==4)
-                        {
-                            return Piece::bn;   
-                        }
-                        else if (it->first ==6)
-                        {
-                            return Piece::bb;   
-                        }
-                        else if (it->first ==8)
-                        {
-                            return Piece::br;   
-                        }
-                        else if (it->first ==10)
-                        {
-                            return Piece::bq;   
-                        }
-                        else if (it->first ==12)
-                        {
-                            return Piece::bk;   
-                        }
-                        
-                    }
-                }
-            }
-    }
-    return std::nullopt;*/
 }
 
 void Board::setTurn(PieceColor turn) {
@@ -331,17 +277,19 @@ Square::Optional Board::enPassantSquare() const {
 }
 
 void Board::makeMove(const Move& move) {
-    auto movedPiece = Board::piecen(move.from());
+    auto fromi = move.from().index();
+    auto toi = move.to().index();
+    auto movedPiece = Board::piecen(fromi);
     if(!movedPiece.has_value()){
         return;
     }
-    auto hitPiece = Board::piecen(move.to());
+    auto hitPiece = Board::piecen(toi);
     if(move.promotion().has_value()){
         if(hitPiece.has_value()){
-            removePiecen(move.to(),hitPiece.value());
+            removePiecen(move.to().index(),hitPiece.value());
         }
-        removePiecen(move.from(),movedPiece.value());
-        setPiecen(move.to(),Piece::getNum(Piece::getColor(movedPiece.value()),move.promotion().value()));
+        removePiecen(fromi,movedPiece.value());
+        setPiecen(toi,Piece::getNum(Piece::getColor(movedPiece.value()),move.promotion().value()));
         setEnPassantSquare(std::nullopt);
     }
     else{
@@ -358,30 +306,31 @@ void Board::makeMove(const Move& move) {
             else if((fdif==1 || fdif == -1) && !hitPiece.has_value() && move.to() == enPassantSquare() && (dif==1 || dif == -1)){
 
                 if(Piece::getColor(movedPiece.value()) == PieceColor::White){
-                    auto s = Square::fromCoordinates(move.to().file(),move.to().rank()-1);
-                    if(s.has_value() && Board::piecen(s.value()) ==  Piece::bp.numb()){
-                        Board::removePiecen(s.value(),Piece::bp.numb());
+                    auto s = getIndx(move.to().rank()-1,move.to().file());
+                    
+                    if(validIndx(s) && Board::piecen(s) ==  Piece::bp.numb()){
+                        Board::removePiecen(s,Piece::bp.numb());
                     }
                     
                 }
                 else{
-                    auto s = Square::fromCoordinates(move.to().file(),move.to().rank()+1);
-                    if(s.has_value() && Board::piecen(s.value()) ==  Piece::wp.numb()){
-                        Board::removePiecen(s.value(),Piece::wp.numb());
+                    auto s = getIndx(move.to().rank()+1,move.to().file());
+                    if(validIndx(s) && Board::piecen(s) ==  Piece::wp.numb()){
+                        Board::removePiecen(s,Piece::wp.numb());
                     }
                 }
                 setEnPassantSquare(std::nullopt);
             }
             else if((fdif==1 || fdif == -1) && (dif==1 || dif == -1)){
                 if(Piece::getColor(movedPiece.value()) == PieceColor::White){
-                    if(Board::piecen(move.to()) ==  Piece::bp.numb()){
-                        Board::removePiecen(move.to(),Piece::bp.numb());
+                    if(Board::piecen(toi) ==  Piece::bp.numb()){
+                        Board::removePiecen(toi,Piece::bp.numb());
                     }
                     
                 }
                 else{
-                    if(Board::piecen(move.to()) ==  Piece::wp.numb()){
-                        Board::removePiecen(move.to(),Piece::wp.numb());
+                    if(Board::piecen(toi) ==  Piece::wp.numb()){
+                        Board::removePiecen(toi,Piece::wp.numb());
                     }
                 }
                 setEnPassantSquare(std::nullopt);
@@ -396,22 +345,22 @@ void Board::makeMove(const Move& move) {
                 setEnPassantSquare(std::nullopt);
                 return;
             }
-            Board::replacePiecen(move.from(),move.to(),movedPiece.value());
+            Board::replacePiecen(fromi,toi,movedPiece.value());
         }
         else{
             if(hitPiece.has_value()){
-                 removePiecen(move.to(),hitPiece.value());
+                 removePiecen(toi,hitPiece.value());
             }
-            Board::replacePiecen(move.from(),move.to(),movedPiece.value());
+            Board::replacePiecen(fromi,toi,movedPiece.value());
             setEnPassantSquare(std::nullopt);
             if(movedPiece.value() ==Piece::wk.numb() && (castlingRights() & CastlingRights::White) !=CastlingRights::None){
                 int diff = move.from().file() - move.to().file();
                 if(abs(diff)==2){
                     if(diff<0){
-                        Board::replacePiecen(Square::fromCoordinates(7,0).value(),Square::fromCoordinates(5,0).value(),Piece::wr.numb());
+                        Board::replacePiecen(7,5,Piece::wr.numb());
                     }
                     else{
-                        Board::replacePiecen(Square::fromCoordinates(0,0).value(),Square::fromCoordinates(3,0).value(),Piece::wr.numb());
+                        Board::replacePiecen(0,3,Piece::wr.numb());
                     }
                 }
                 setCastlingRights(castlingRights() & ~CastlingRights::White);
@@ -420,10 +369,10 @@ void Board::makeMove(const Move& move) {
                 int diff = move.from().file() - move.to().file();
                 if(abs(diff)==2){
                     if(diff<0){
-                        Board::replacePiecen(Square::fromCoordinates(7,7).value(),Square::fromCoordinates(5,7).value(),Piece::br.numb());
+                        Board::replacePiecen(getIndx(7,7),getIndx(7,5),Piece::br.numb());
                     }
                     else{
-                        Board::replacePiecen(Square::fromCoordinates(0,7).value(),Square::fromCoordinates(3,7).value(),Piece::br.numb());
+                        Board::replacePiecen(getIndx(7,0),getIndx(7,3),Piece::br.numb());
                     }
                 }
                 setCastlingRights(castlingRights() & ~CastlingRights::Black);
@@ -472,7 +421,7 @@ void Board::pseudoLegalMoves(MoveVec& moves) const {
                 unsigned int vecSize = (it->second).size();
                 for(unsigned int i = 0; i < vecSize; i++)
                 {
-                    Board::pseudoLegalMovesFrom(*(it->second)[i],moves);
+                    Board::pseudoLegalMovesFrom(Square::fromIndex((it->second)[i]).value(),moves);
                 }
             }
             
@@ -491,17 +440,18 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
     if (from.rank()==start)
                 {   
                     auto front = Square::fromCoordinates(from.file(),from.rank()+d).value();
-                    if(!Board::piecen(front).has_value()){
+                    //auto front = getIndx(from.rank()+d,from.file());
+                    if(!Board::piecen(front.index()).has_value()){
                         moves.push_back(Move::Move(from,front));
                         auto frontp = Square::fromCoordinates(from.file(),from.rank()+2*d).value();
-                        if(!Board::piecen(frontp).has_value()){
+                        if(!Board::piecen(frontp.index()).has_value()){
                              moves.push_back(Move::Move(from,frontp));
                         }
                     }
                 }
                 if(from.rank()==end){
                     auto front = Square::fromCoordinates(from.file(),from.rank()+d).value();
-                    if(!Board::piecen(front).has_value()){
+                    if(!Board::piecen(front.index()).has_value()){
                         moves.push_back(Move::Move(from,front,PieceType::Queen));
                         moves.push_back(Move::Move(from,front,PieceType::Rook));
                         moves.push_back(Move::Move(from,front,PieceType::Bishop));
@@ -509,7 +459,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     }
                     auto frontl = Square::fromCoordinates(from.file()-1,from.rank()+d);
                     if(frontl.has_value()){
-                        auto frontp = Board::piecen(frontl.value());
+                        auto frontp = Board::piecen(frontl.value().index());
                         if(frontp.has_value()){
                             if(Piece::getColor(frontp.value()) !=p.value().color() && (frontp.value() != Piece::wk.numb() || frontp.value() != Piece::bk.numb())){
                                 moves.push_back(Move::Move(from,frontl.value(),PieceType::Queen));
@@ -522,7 +472,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     }
                     auto frontr = Square::fromCoordinates(from.file()+1,from.rank()+d);
                     if(frontr.has_value()){
-                        auto frontp = Board::piecen(frontr.value());
+                        auto frontp = Board::piecen(frontr.value().index());
                         if(frontp.has_value()){
                             if(Piece::getColor(frontp.value())!=p.value().color() && (frontp.value() != Piece::wk.numb() || frontp.value() != Piece::bk.numb())){
                                 moves.push_back(Move::Move(from,frontr.value(),PieceType::Queen));
@@ -539,7 +489,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                 
                 //EN Passant cases
                 if(frontr.has_value()){
-                    auto rp = Board::piecen(frontr.value());
+                    auto rp = Board::piecen(frontr.value().index());
                     if(frontr.value()==Board::enPassantSquare()){
                         if(p.value().color() == PieceColor::White && frontr.value().rank() == 5){
                             moves.push_back(Move::Move(from,frontr.value()));
@@ -558,7 +508,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     
                 }
                 if(frontl.has_value()){
-                    auto lp = Board::piecen(frontl.value());
+                    auto lp = Board::piecen(frontl.value().index());
                     if(frontl.value()==Board::enPassantSquare()){
                         if(p.value().color() == PieceColor::White && frontl.value().rank() == 5){
                             moves.push_back(Move::Move(from,frontl.value()));
@@ -574,7 +524,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     }
                 }
                 if(front.has_value() && from.rank()!=start){
-                    if(!Board::piecen(front.value()).has_value()){
+                    if(!Board::piecen(front.value().index()).has_value()){
                         moves.push_back(Move::Move(from,front.value()));
                     }
                 }
@@ -586,7 +536,7 @@ void Board::KingpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,P
     if(!next.has_value()){
         return;
     }
-    auto np = Board::piecen(next.value());
+    auto np = Board::piecen(next.value().index());
     if(!np.has_value()){
         moves.push_back(Move::Move(from,next.value()));
     }
@@ -602,7 +552,7 @@ void Board::BishoppseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
     if(!next.has_value()){
         return;
     }
-    auto np = Board::piecen(next.value());
+    auto np = Board::piecen(next.value().index());
     while(!np.has_value()){
 
          moves.push_back(Move::Move(from,next.value()));
@@ -611,7 +561,7 @@ void Board::BishoppseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
         if(!next.has_value()){
             break;
         }
-        np = Board::piecen(next.value());
+        np = Board::piecen(next.value().index());
     }
     if(next.has_value() && Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb())){
         moves.push_back(Move::Move(from,next.value()));
@@ -623,7 +573,7 @@ void Board::KnightpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
     if(!next.has_value()){
         return;
     }
-    auto np = Board::piecen(next.value());
+    auto np = Board::piecen(next.value().index());
     if(!np.has_value() || (Piece::getColor(np.value())!=p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb()))){
         moves.push_back(Move::Move(from,next.value()));
     }
@@ -648,14 +598,9 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
 
         k-=1;
     }
-    /**if(board[k].size()==0){
-        return -1;
-    }*/
-
-    //Square ksqr = *board[k][0];
     int ksqrr = sq.rank();
     int ksqrf= sq.file();
-    int ksqi = ksqrr*8 + ksqrf;
+    int ksqi = sq.index();
 
     int kpos[4] = {-2,-1,1,2};
     for(int kpi:kpos){
@@ -677,6 +622,7 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
     int prev =ksqi;
     int indx =0;
     while(i<2){
+        j=-1;
         while(j<2){
             if(!(i==0 && j ==0)){
                 int s =1;
@@ -691,7 +637,7 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
                     }
                     auto pic = cboard[indx];
                     if(pic!=0){
-                        if(Piece::getColor(pic) == t){
+                        if(Piece::getColor(pic) == tu){
                             break;
                         }
                         if(pic == r || pic == q){
@@ -728,35 +674,8 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
 
     return -1;
 
-    /**for(auto it = board.begin(); it != board.end();++it){
-            if(Piece::getColor(it->first) != t && it->first !=Piece::wk.numb() && it->first !=Piece::bk.numb()){
-                auto pic = it->first;
-                unsigned int vecSize = (it->second).size();
-                for(unsigned int i = 0; i < vecSize; i++)
-                {
-                    int attackr = (it->second)[i]->rank(); 
-                    int attackf = (it->second)[i]->file(); 
-                    if(pic == r || pic == q){
-                        if(ksqrr==attackr){
-
-                        }
-                    }
-                    if (pic == b || pic == q)
-                    {
-                        
-                    }
-                    else if(pic == n){
-
-                    }
-                    else{
-
-                    }
-                    
-                }
-            }
-            
-    }*/
 }
+
 
 
 void Board::pseudoLegalMovesFrom(const Square& from,
@@ -876,14 +795,25 @@ void Board::pseudoLegalMovesFrom(const Square& from,
         }
    }
 }
-std::map<const int, std::vector<Square*>> Board::getBoard() const{
+std::map<const int, std::vector<int>> Board::getBoard() const{
     return board;
+}
+
+std::vector<int> Board::getcBoard() const{
+    return cboard;
+}
+
+int Board::getHScore(){
+    return hscore;
+}
+void Board::setHScore(int s){
+    hscore =s;
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& board) {
     auto b = board.getBoard();
     std::string s = "";
-    for(auto it = b.begin(); it != b.end();++it){
+    /**for(auto it = b.begin(); it != b.end();++it){
         s +=  (it->first + "={");
             unsigned int vecSize = (it->second).size();
             for(unsigned int i = 0; i < vecSize; i++)
@@ -892,6 +822,6 @@ std::ostream& operator<<(std::ostream& os, const Board& board) {
             }
             s+="}";
         
-    }
+    }*/
     return os << s;
 }
