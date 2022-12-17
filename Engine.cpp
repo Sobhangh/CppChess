@@ -50,11 +50,11 @@ class myEngine: public Engine{
 
     
     const int INF = 1000000;
-    const int CHECK = 100000;
+    const int CHECK = 100;
 
     std::tuple<std::vector<Move>,int> negamax(Board& node, int depth, int a, int b, int color) {
         if (depth == 0){ //or node is a terminal node then
-            auto pv =std::make_tuple(std::vector<Move>(),color * heuristic(node));
+            auto pv =std::make_tuple(std::vector<Move>(),heuristic(node,node.turn()));
             return pv;
         } 
         Square::Optional ksq = std::nullopt;
@@ -65,7 +65,7 @@ class myEngine: public Engine{
         
         std::vector<Move> childNodes =std::vector<Move>();
         generateMoves(childNodes,node);
-        orderMoves(childNodes);
+        orderMoves(childNodes,node.turn(),node.getcBoard());
         auto value = -1*INF;
         std::tuple<std::vector<Move>,int> pvmax;
         bool allcheck =true;
@@ -178,9 +178,9 @@ class myEngine: public Engine{
         }
         return false;
     }
-
-    void orderMoves(std::vector<Move> boardVc){
-        std::sort(boardVc.begin(),boardVc.end(),[](Move& a,Move& b){
+    //give the color: if move is towards the other side then it is better than towrards your own side
+    void orderMoves(std::vector<Move>& boardVc, PieceColor c,std::vector<int> cb){
+        std::sort(boardVc.begin(),boardVc.end(),[c,cb](Move& a,Move& b){
         if(a.promotion().has_value() && !b.promotion().has_value()){
             return true;
         }
@@ -193,7 +193,43 @@ class myEngine: public Engine{
             }
             return false;
         }
-        if(Square::HammingDist(a.from(),a.to())> Square::HammingDist(b.from(),b.to())){
+        int score =0;
+        if(cb[a.to().index()] >  cb[b.to().index()]){
+            score += (1+cb[a.to().index()]/2);
+        }
+        else if(cb[a.to().index()] <  cb[b.to().index()]){
+            score -= (1+cb[b.to().index()]/2);
+        }
+
+        if(c == PieceColor::White){
+            if(a.to().rank()>b.to().rank()){
+                score+= (a.to().rank()-b.to().rank());
+                //return true;
+            }
+            else if (b.to().rank()>a.to().rank())
+            {
+                score+= (a.to().rank()-b.to().rank());
+                //return false;
+            }
+            
+        }
+        else{
+            if(a.to().rank()<b.to().rank()){
+                score+= (b.to().rank()-a.to().rank());
+                //return true;
+            }
+            else if (b.to().rank()<a.to().rank())
+            {
+                score+= (b.to().rank()-a.to().rank());
+                //return false;
+            }
+        }
+        score += (Square::HammingDist(a.from(),a.to())- Square::HammingDist(b.from(),b.to()));
+        /**if(Square::HammingDist(a.from(),a.to())> Square::HammingDist(b.from(),b.to())){
+
+            return true;
+        }*/
+        if(score>0){
             return true;
         }
         return false;
@@ -203,16 +239,30 @@ class myEngine: public Engine{
 
 
 
-    int heuristic(Board& b){
+    int heuristic(Board& b,PieceColor c){
         int score =0;
-        Square::Optional ksq = Square::fromIndex(b.getBoard()[Piece::wk.numb()][0]);
-        if(b.inCheck(PieceColor::White, ksq.value())!=-1){
-            return -1*CHECK;
+        if(c==PieceColor::White){
+            Square::Optional ksq = Square::fromIndex(b.getBoard()[Piece::wk.numb()][0]);
+            if(b.inCheck(PieceColor::White, ksq.value())!=-1){
+                score+= -1*CHECK;
+            }
+            Square::Optional bksq = Square::fromIndex(b.getBoard()[Piece::bk.numb()][0]);
+            if(b.inCheck(PieceColor::Black, bksq.value())!=-1){
+                score+= CHECK;
+            }
         }
-        Square::Optional bksq = Square::fromIndex(b.getBoard()[Piece::bk.numb()][0]);
-        if(b.inCheck(PieceColor::Black, bksq.value())!=-1){
-            return CHECK;
+        else{
+            Square::Optional ksq = Square::fromIndex(b.getBoard()[Piece::bk.numb()][0]);
+            if(b.inCheck(PieceColor::Black, ksq.value())!=-1){
+                score+= -1*CHECK;
+            }
+            Square::Optional bksq = Square::fromIndex(b.getBoard()[Piece::wk.numb()][0]);
+            if(b.inCheck(PieceColor::White, bksq.value())!=-1){
+                score+= CHECK;
+            }
         }
+        
+        
         int i=1;
         while(i<=12){
             if(i==Piece::wp.numb()){
