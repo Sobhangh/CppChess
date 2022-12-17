@@ -33,7 +33,7 @@ class myEngine: public Engine{
         const TimeInfo::Optional& timeInfo = std::nullopt
     ) override {
         (void)timeInfo;
-        auto b = Board::Board(board);
+        auto b =  Board(board);
         auto ngmx = negamax(b,5,-1*INF,INF,1);
         auto p = PrincipalVariation();
         p.makeMoveVc(std::get<0>(ngmx));
@@ -71,7 +71,7 @@ class myEngine: public Engine{
         bool allcheck =true;
         bool prune =false;
         for(auto child : childNodes){
-            auto nb =  Board::Board(node);
+            auto nb =   Board(node);
             nb.makeMove(child);
             bool inch = false;
             if(node.turn() == PieceColor::White){
@@ -136,16 +136,16 @@ class myEngine: public Engine{
     }
 
     void generateMoves(std::vector<Move>& boardVc,Board& b){
-        /**auto mv=Board::MoveVec();
+        /**auto mv= MoveVec();
         b.pseudoLegalMoves(mv);
         for(auto m : mv){
-            auto nb = Board::Board(b);
+            auto nb =  Board(b);
             nb.makeMove(m);
             auto score = heuristic(nb)*color;
             nb.setHScore(score);
             boardVc.push_back(std::make_tuple(nb,m));
         }*/
-        auto mv=Board::MoveVec();
+        auto mv= Board::MoveVec();
         b.pseudoLegalMoves(mv);
         for(auto m : mv){
             boardVc.push_back(m);
@@ -259,7 +259,7 @@ void Engine::setHashSize(std::size_t) {}*/
                 generateMoves(mvs,node);
                 bool allcheck =true;
                 for(auto m : mvs){
-                    auto nbrd =  Board::Board(node);
+                    auto nbrd =   Board(node);
                     nbrd.setTurn(PieceColor::Black);
                     nbrd.makeMove(m);
                     ksq = Square::fromIndex(nbrd.getBoard()[Piece::bk.numb()][0]);
@@ -287,7 +287,7 @@ void Engine::setHashSize(std::size_t) {}*/
                 generateMoves(mvs,node);
                 bool allcheck =true;
                 for(auto m : mvs){
-                    auto nbrd =  Board::Board(node);
+                    auto nbrd =   Board(node);
                     nbrd.setTurn(PieceColor::White);
                     nbrd.makeMove(m);
                     ksq = Square::fromIndex(nbrd.getBoard()[Piece::wk.numb()][0]);
