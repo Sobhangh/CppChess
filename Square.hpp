@@ -35,8 +35,8 @@ private:
 //Columns (called files) are labeled a through h while rows (called ranks) are labeled 1 through 8.
 
     Index i;
-    Coordinate f;
     Coordinate r;
+    Coordinate f;
     Square(Index index);
 };
 
