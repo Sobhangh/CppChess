@@ -69,7 +69,7 @@ class myEngine: public Engine{
         auto value = -1*INF;
         std::tuple<std::vector<Move>,int> pvmax;
         bool allcheck =true;
-        bool prune =false;
+        //bool prune =false;
         for(auto child : childNodes){
             auto nb =   Board(node);
             nb.makeMove(child);
@@ -101,7 +101,7 @@ class myEngine: public Engine{
                 }
                 a= std::max(a, value);
                 if( a >= b){
-                    prune =true;
+                    //prune =true;
                     break ;
                 } 
             }
