@@ -123,8 +123,11 @@ void Board::setPiecen(const int square, const int piece){
     if(piece>12 || piece<1){
         return;
     }
-    cboard[square] = piece;
-    board[piece].push_back(square);
+    if(square>=0 && square<64){
+        cboard[square] = piece;
+        board[piece].push_back(square);
+    }
+    
     /**
     for(auto it = board.begin(); it != board.end();++it){
         if(piece == (it->first)){
@@ -137,6 +140,9 @@ void Board::setPiecen(const int square, const int piece){
 
 void Board::removePiecen(const int square, const int piece){
     if(piece>12 || piece<1){
+        return;
+    }
+    if(square<0 || square>63){
         return;
     }
     //auto p = cboard[pos];
@@ -156,6 +162,12 @@ void Board::removePiecen(const int square, const int piece){
 //from and to are indexes of the squares
 void Board::replacePiecen(const int from,const int to, const int piece){
     if(piece>12 || piece<1){
+        return;
+    }
+    if(from<0 || from>63){
+        return;
+    }
+    if(to<0 || to>63){
         return;
     }
     cboard[to] = piece;
@@ -182,6 +194,9 @@ void Board::replacePiecen(const int from,const int to, const int piece){
 
 //index of the square
 Board::nOp Board::piecen(const int square) const{
+    if(square<0 || square>63){
+        return std::nullopt;
+    }
     auto p = cboard[square] ;
     if(p == 0){
         return std::nullopt;
@@ -192,7 +207,7 @@ Board::nOp Board::piecen(const int square) const{
 
 Piece::Optional Board::piece(const Square& square) const {
     //(void)square;
-    auto p = cboard[square.rank()*8 + square.file()] ;
+    auto p = cboard[square.index()] ;
     if(p == 0 || p>12){
         return std::nullopt;
     }
@@ -461,7 +476,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     if(frontl.has_value()){
                         auto frontp = Board::piecen(frontl.value().index());
                         if(frontp.has_value()){
-                            if(Piece::getColor(frontp.value()) !=p.value().color() && (frontp.value() != Piece::wk.numb() || frontp.value() != Piece::bk.numb())){
+                            if(Piece::getColor(frontp.value()) !=p.value().color() && (frontp.value() != Piece::wk.numb() && frontp.value() != Piece::bk.numb())){
                                 moves.push_back( Move(from,frontl.value(),PieceType::Queen));
                                 moves.push_back( Move(from,frontl.value(),PieceType::Rook));
                                 moves.push_back( Move(from,frontl.value(),PieceType::Bishop));
@@ -474,7 +489,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                     if(frontr.has_value()){
                         auto frontp = Board::piecen(frontr.value().index());
                         if(frontp.has_value()){
-                            if(Piece::getColor(frontp.value())!=p.value().color() && (frontp.value() != Piece::wk.numb() || frontp.value() != Piece::bk.numb())){
+                            if(Piece::getColor(frontp.value())!=p.value().color() && (frontp.value() != Piece::wk.numb() && frontp.value() != Piece::bk.numb())){
                                 moves.push_back( Move(from,frontr.value(),PieceType::Queen));
                                 moves.push_back( Move(from,frontr.value(),PieceType::Rook));
                                 moves.push_back( Move(from,frontr.value(),PieceType::Bishop));
@@ -501,7 +516,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                         
                         
                     }
-                    else if (rp.has_value() && Piece::getColor(rp.value()) != p.value().color() && (rp.value() != Piece::wk.numb() || rp.value() != Piece::bk.numb()))
+                    else if (rp.has_value() && Piece::getColor(rp.value()) != p.value().color() && (rp.value() != Piece::wk.numb() && rp.value() != Piece::bk.numb()))
                     {
                         moves.push_back( Move(from,frontr.value()));
                     }
@@ -518,7 +533,7 @@ void  Board::PawnpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,
                             moves.push_back( Move(from,frontl.value()));
                         }
                     }
-                    else if (lp.has_value() && Piece::getColor(lp.value()) != p.value().color() && (lp.value() != Piece::wk.numb() || lp.value() != Piece::bk.numb()))
+                    else if (lp.has_value() && Piece::getColor(lp.value()) != p.value().color() && (lp.value() != Piece::wk.numb() && lp.value() != Piece::bk.numb()))
                     {
                         moves.push_back( Move(from,frontl.value()));
                     }
@@ -540,7 +555,7 @@ void Board::KingpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves,P
     if(!np.has_value()){
         moves.push_back( Move(from,next.value()));
     }
-    else if(Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb())){
+    else if(Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() && np.value() != Piece::bk.numb())){
         moves.push_back( Move(from,next.value()));
     }
 }
@@ -563,7 +578,7 @@ void Board::BishoppseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
         }
         np = Board::piecen(next.value().index());
     }
-    if(next.has_value() && Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb())){
+    if(next.has_value() && Piece::getColor(np.value()) != p.value().color() && (np.value() != Piece::wk.numb() && np.value() != Piece::bk.numb())){
         moves.push_back( Move(from,next.value()));
     }
 }
@@ -574,7 +589,7 @@ void Board::KnightpseudoLegalMovesFrom(const Square& from, Board::MoveVec& moves
         return;
     }
     auto np = Board::piecen(next.value().index());
-    if(!np.has_value() || (Piece::getColor(np.value())!=p.value().color() && (np.value() != Piece::wk.numb() || np.value() != Piece::bk.numb()))){
+    if(!np.has_value() || (Piece::getColor(np.value())!=p.value().color() && (np.value() != Piece::wk.numb() && np.value() != Piece::bk.numb()))){
         moves.push_back( Move(from,next.value()));
     }
 }

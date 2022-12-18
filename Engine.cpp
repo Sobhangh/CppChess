@@ -65,12 +65,27 @@ class myEngine: public Engine{
         Square::Optional ksq = std::nullopt;
         PieceColor t = PieceColor::White;
         if(node.turn() == PieceColor::White){
+            auto ksqarr = node.getBoard()[Piece::bk.numb()];
+            if(ksqarr.size()==0){
+                return std::make_tuple(std::vector<Move>(),-5*INF);
+            }
+            ksq = Square::fromIndex(ksqarr[0]);
             t = PieceColor::Black;
+        }
+        else{
+            auto ksqarr =node.getBoard()[Piece::wk.numb()];
+            if(ksqarr.size()==0){
+                return std::make_tuple(std::vector<Move>(),-5*INF);
+            }
+            ksq = Square::fromIndex(ksqarr[0]);
+        }
+        if(!ksq.has_value()){
+            return std::make_tuple(std::vector<Move>(),-5*INF);
         }
         
         std::vector<Move> childNodes =std::vector<Move>();
         generateMoves(childNodes,node);
-        orderMoves(childNodes,node.turn(),node.getcBoard());
+        orderMoves(childNodes,node.turn(),node.getcBoard(),ksq.value().rank(),ksq.value().file());
         auto value = -1*INF;
         std::tuple<std::vector<Move>,int> pvmax;
         bool allcheck =true;
@@ -80,13 +95,21 @@ class myEngine: public Engine{
             nb.makeMove(child);
             bool inch = false;
             if(node.turn() == PieceColor::White){
-                ksq = Square::fromIndex(nb.getBoard()[Piece::wk.numb()][0]);
+                auto ksqarr =nb.getBoard()[Piece::wk.numb()];
+                if(ksqarr.size()==0){
+                    return std::make_tuple(std::vector<Move>(),-5*INF);
+                }
+                ksq = Square::fromIndex(ksqarr[0]);
                 if(nb.inCheck(PieceColor::White,ksq.value())!=-1){
                     inch =true;
                 }
             }
             else{
-                ksq = Square::fromIndex(nb.getBoard()[Piece::bk.numb()][0]);
+                auto ksqarr = nb.getBoard()[Piece::bk.numb()];
+                if(ksqarr.size()==0){
+                    return std::make_tuple(std::vector<Move>(),-5*INF);
+                }
+                ksq = Square::fromIndex(ksqarr[0]);
                 if(nb.inCheck(PieceColor::Black,ksq.value())!=-1){
                     inch =true;
                 }
@@ -119,7 +142,11 @@ class myEngine: public Engine{
             Square::Optional ks = std::nullopt;
             PieceColor tu = PieceColor::White;
             if(node.turn()==PieceColor::White){
-                ks = Square::fromIndex(node.getBoard()[Piece::wk.numb()][0]);
+                auto ksqarr =node.getBoard()[Piece::wk.numb()];
+                if(ksqarr.size()==0){
+                    return std::make_tuple(std::vector<Move>(),-5*INF);
+                }
+                ks = Square::fromIndex(ksqarr[0]);
                 if(node.inCheck(tu,ks.value())!=-1){
                     auto pv =std::make_tuple(std::vector<Move>(),-1*INF);
                     return pv;
@@ -129,7 +156,11 @@ class myEngine: public Engine{
             }
             else{
                 tu=PieceColor::Black;
-                ks = Square::fromIndex(node.getBoard()[Piece::bk.numb()][0]);
+                auto ksqarr =node.getBoard()[Piece::bk.numb()];
+                if(ksqarr.size()==0){
+                    return std::make_tuple(std::vector<Move>(),-5*INF);
+                }
+                ks = Square::fromIndex(ksqarr[0]);
                 if(node.inCheck(tu,ks.value())!=-1){
                     auto pv =std::make_tuple(std::vector<Move>(),-1*INF);
                     return pv;
@@ -184,10 +215,135 @@ class myEngine: public Engine{
         return h;
     }
 
+    static int checkMove(int tor,int tof,PieceColor c,std::vector<int> cb,const int kingr,const int kingf){
+        int indx = tor*8 + tof;
+        if(indx<0|| indx>63){
+            return 0;
+        }
+        const int score =5;
+        const int bscore =2;
+        if(c==PieceColor::White){
+            if (cb[indx]==Piece::wp.numb())
+            {
+                if((kingr-tor==1 && std::abs(kingf-tof)==1)){
+                    return bscore;
+                }
+            }
+        }
+        else{
+            if (cb[indx]==Piece::bp.numb())
+            {
+                if((tor-kingr==1 && std::abs(kingf-tof)==1)){
+                    return bscore;
+                }
+            }
+
+        }
+        if(cb[indx]==Piece::wn.numb() || cb[indx]==Piece::bn.numb()){
+            if((std::abs(tor-kingr)==2 && std::abs(tof-kingf)==1) ||  (std::abs(tor-kingr)==1 && std::abs(tof-kingf)==2)){
+                return score;
+            }
+        }
+        if(cb[indx]==Piece::wr.numb() || cb[indx]==Piece::wq.numb() || cb[indx]==Piece::br.numb() || cb[indx]==Piece::bq.numb()){
+            int diff = kingf-tof;
+            int difr = kingr-tor;
+            if(diff==0 ){
+                if(abs(difr)==1){
+                    return bscore;
+                }
+                int i =0;
+                if(difr>0){
+                    i =8;
+                }
+                else{
+                    i=-1*8;
+                }
+                int s = tor*8 +i+ kingf;
+                int ki = kingr*8 + kingf;
+                bool con = true;
+                while(s!=ki){
+                    if(s<0 || s> 63 ||cb[s]!=0){
+                        con = false;
+                        break;
+                    }
+                    s +=i;
+                }
+                if(con){
+                    return score;
+                }
+            }
+            else if (difr==0)
+            {   
+                if(std::abs(diff)==1){
+                    return bscore;
+                }
+                int i =0;
+                if(diff>0){
+                    i=1;
+                }
+                else{
+                    i=-1;
+                }
+                int s =kingr*8 + (tof+i);
+                const int ki = kingr*8 + kingf;
+                bool con = true;
+                while(s!=ki){
+                    if(s<0 || s> 63 || cb[s]!=0){
+                        con = false;
+                        break;
+                    }
+                    s+=i;
+                }
+                if(con){
+                    return score;
+                }
+            }
+            return 0;
+        }
+        if(cb[indx]==Piece::wb.numb() || cb[indx]==Piece::wq.numb() || cb[indx]==Piece::bb.numb() || cb[indx]==Piece::bq.numb()){
+            int diff = kingf-tof;
+            int difr = kingr-tor;
+            const int ki = kingr*8 + kingf;
+            bool con = true;
+            if(std::abs(difr)== std::abs(diff)){
+                if(std::abs(difr)==1){
+                    return bscore;
+                }
+                int i =0;
+                int j=0;
+                if(difr>0){
+                    i=8;
+                }
+                else{
+                    i = -1*8;
+                }
+                if(diff>0){
+                    j=1;
+                }
+                else{
+                    j=-1;
+                }
+                int s = tor*8 + i +tof + j;
+                while(s!=ki){
+                    if( s<0 || s> 63 || cb[s]!=0){
+                        con = false;
+                        break;
+                    }
+                    s+=(i+j);
+                }
+                if(con){
+                    return score;
+                }
+            }
+        }
+        return 0;
+        
+    }
+
     //int surroudning
     //give the color: if move is towards the other side then it is better than towrards your own side
-    void orderMoves(std::vector<Move>& boardVc, PieceColor c,std::vector<int> cb){
-        std::sort(boardVc.begin(),boardVc.end(),[c,cb](Move& a,Move& b){
+    void orderMoves(std::vector<Move>& boardVc, PieceColor c,std::vector<int> cb,const int kr,const int kf){
+        std::sort(boardVc.begin(),boardVc.end(),[c,cb,kr,kf](Move& a,Move& b){
         if(a.promotion().has_value() && !b.promotion().has_value()){
             return true;
         }
@@ -212,11 +368,26 @@ class myEngine: public Engine{
             int cda = std::abs((int)a.to().rank()-5);
             int cdb = std::abs((int)b.to().rank()-5);
             score+= cdb-cda;
+            int kindx = kr*8+kf;
+            if(kindx>=0 && kindx<64){
+                if(cb[kindx]==Piece::bk.numb()){
+                    score += (checkMove(a.to().rank(),a.to().file(),c,cb,kr,kf) - checkMove(b.to().rank(),b.to().file(),c,cb,kr,kf));
+                }
+            }
+            
+            
         }
         else{
             int cda = std::abs((int)a.to().rank()-2);
             int cdb = std::abs((int)b.to().rank()-2);
             score+= cdb-cda;
+            int kindx = kr*8+kf;
+            if(kindx>=0 && kindx<64){
+                if(cb[kindx]==Piece::wk.numb()){
+                    score += (checkMove(a.to().rank(),a.to().file(),c,cb,kr,kf) - checkMove(b.to().rank(),b.to().file(),c,cb,kr,kf));
+                }
+            }
+            
         }
         int pieca= cb[a.from().index()];
         int piecb = cb[b.from().index()];
@@ -239,21 +410,37 @@ class myEngine: public Engine{
     int heuristic(Board& b,PieceColor c){
         int score =0;
         if(c==PieceColor::White){
-            Square::Optional ksq = Square::fromIndex(b.getBoard()[Piece::wk.numb()][0]);
+            auto ksqarr = b.getBoard()[Piece::wk.numb()];
+            if(ksqarr.size()==0){
+                return -5*INF;
+            }
+            Square::Optional ksq = Square::fromIndex(ksqarr[0]);
             if(b.inCheck(PieceColor::White, ksq.value())!=-1){
                 score+= -1*CHECK;
             }
-            Square::Optional bksq = Square::fromIndex(b.getBoard()[Piece::bk.numb()][0]);
+            auto bksqarr =  b.getBoard()[Piece::bk.numb()];
+            if(bksqarr.size()==0){
+                return -5*INF;
+            }
+            Square::Optional bksq = Square::fromIndex(bksqarr[0]);
             if(b.inCheck(PieceColor::Black, bksq.value())!=-1){
                 score+= CHECK;
             }
         }
         else{
-            Square::Optional ksq = Square::fromIndex(b.getBoard()[Piece::bk.numb()][0]);
+            auto ksqarr =  b.getBoard()[Piece::bk.numb()];
+            if(ksqarr.size()==0){
+                return -5*INF;
+            }
+            Square::Optional ksq = Square::fromIndex(ksqarr[0]);
             if(b.inCheck(PieceColor::Black, ksq.value())!=-1){
                 score+= -1*CHECK;
             }
-            Square::Optional bksq = Square::fromIndex(b.getBoard()[Piece::wk.numb()][0]);
+            auto bksqarr = b.getBoard()[Piece::wk.numb()];
+            if(bksqarr.size()==0){
+                return -5*INF;
+            }
+            Square::Optional bksq = Square::fromIndex(bksqarr[0]);
             if(b.inCheck(PieceColor::White, bksq.value())!=-1){
                 score+= CHECK;
             }
@@ -261,7 +448,7 @@ class myEngine: public Engine{
         
         if(c==PieceColor::White){
             int i=1;
-            while(i<=12){
+            while(i<12){
                 if(i==Piece::wp.numb()){
                     score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size())*2;
                 }
