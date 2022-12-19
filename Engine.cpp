@@ -135,6 +135,10 @@ class myEngine: public Engine{
                     pvmax =std::make_tuple(std::get<0>(pv),v);
                     std::get<0>(pvmax).push_back(child);
                 }
+                if(v==-1*INF && value==v){
+                    pvmax =std::make_tuple(std::vector<Move>(),-1*INF);
+                    //std::get<0>(pvmax).push_back(child);
+                }
                 a= std::max(a, value);
                 if( a >= b){
                     //prune =true;
