@@ -368,7 +368,7 @@ class myEngine: public Engine{
         else if(cb[a.to().index()] <  cb[b.to().index()]){
             score -= (cb[b.to().index()]);
         }
-
+        //score += (cb[a.to().index()]-cb[b.to().index()]);
         if(c == PieceColor::White){
             int cda = std::abs((int)a.to().rank()-5);
             int cdb = std::abs((int)b.to().rank()-5);

@@ -361,6 +361,9 @@ void Board::makeMove(const Move& move) {
                 return;
             }
             Board::replacePiecen(fromi,toi,movedPiece.value());
+            if(hitPiece.has_value()){
+                 removePiecen(toi,hitPiece.value());
+            }
         }
         else{
             if(hitPiece.has_value()){
