@@ -34,7 +34,7 @@ class myEngine: public Engine{
     ) override {
         (void)timeInfo;
         auto b =  Board(board);
-        auto ngmx = negamax(b,4,-1*INF,INF,1);
+        auto ngmx = negamax(b,5,-1*INF,INF,1);
         auto p = PrincipalVariation();
         /**auto v = Board::MoveVec();
         for(auto it=std::get<0>(ngmx).size()-1;it>=0;--it){
