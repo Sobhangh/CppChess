@@ -693,6 +693,7 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
                             }
                             break;
                         }
+                        break;
                         
                         //king checking each other????
                     }
