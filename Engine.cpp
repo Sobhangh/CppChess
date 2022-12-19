@@ -445,24 +445,41 @@ class myEngine: public Engine{
                 score+= CHECK;
             }
         }
-        //king protection
+        //king protection:front left and right.
         int wkprtct = 0;
         int wki = b.getBoard()[Piece::wk.numb()][0];
         int wkif =wki+8;
         if(wkif<64){
-            if(b.getcBoard()[wkif]!=0 && Piece::getColor(b.getcBoard()[wkif])==PieceColor::White){
-                wkprtct += 5;
+            if(b.getcBoard()[wkif]!=0 ){
+                if(Piece::getColor(b.getcBoard()[wkif])==PieceColor::White){
+                    wkprtct += 5;
+                }
+                else{
+                    wkprtct -=5;
+                }
+                
             }
             int wkil = wkif-1;
             if(wkif%8!=0){
-                if(b.getcBoard()[wkil]!=0 && Piece::getColor(b.getcBoard()[wkil])==PieceColor::White){
-                    wkprtct += 2;
+                if(b.getcBoard()[wkil]!=0){
+                    if(Piece::getColor(b.getcBoard()[wkil])==PieceColor::White){
+                        wkprtct += 2;
+                    }
+                    else{
+                        wkprtct -=2;
+                    }
+                    
                 }
             }
             int wkir = wkif+1;
             if(wkif%8!=7){
-                if(b.getcBoard()[wkir]!=0 && Piece::getColor(b.getcBoard()[wkir])==PieceColor::White){
-                    wkprtct += 2;
+                if(b.getcBoard()[wkir]!=0){
+                    if(Piece::getColor(b.getcBoard()[wkir])==PieceColor::White){
+                        wkprtct += 2;
+                    }
+                    else{
+                        wkprtct -=2;
+                    }
                 }
             }
         }
@@ -470,19 +487,34 @@ class myEngine: public Engine{
         int bki = b.getBoard()[Piece::bk.numb()][0];
         int bkif =bki-8;
         if(bkif>=0){
-            if(b.getcBoard()[bkif]!=0 && Piece::getColor(b.getcBoard()[bkif])==PieceColor::Black){
-                bkprtct += 5;
+            if(b.getcBoard()[bkif]!=0){
+                if(Piece::getColor(b.getcBoard()[bkif])==PieceColor::Black){
+                    bkprtct += 5;
+                }
+                else{
+                    bkprtct -=5;
+                }
             }
             int bkil = bkif-1;
             if(bkif%8!=0){
-                if(b.getcBoard()[bkil]!=0 && Piece::getColor(b.getcBoard()[bkil])==PieceColor::Black){
-                    bkprtct += 2;
+                if(b.getcBoard()[bkil]!=0){
+                    if(Piece::getColor(b.getcBoard()[bkil])==PieceColor::Black){
+                        bkprtct += 2;
+                    }
+                    else{
+                        bkprtct -=2;
+                    }
                 }
             }
             int bkir = bkif+1;
             if(bkif%8!=7){
-                if(b.getcBoard()[bkir]!=0 && Piece::getColor(b.getcBoard()[bkir])==PieceColor::Black){
-                    bkprtct += 2;
+                if(b.getcBoard()[bkir]!=0){
+                    if(Piece::getColor(b.getcBoard()[bkir])==PieceColor::Black){
+                        bkprtct += 2;
+                    }
+                    else{
+                        bkprtct -=2;
+                    }
                 }
             }
         }
@@ -521,31 +553,44 @@ class myEngine: public Engine{
         
         if(c==PieceColor::White){
             int i=1;
+            //"contextualizing" the differences. Not losing pieces is beter.
+            int ps =0;
             while(i<12){
                 if(i==Piece::wp.numb()){
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size())*2;
+                    int pas = b.getBoard()[i].size();;
+                    ps += pas;
+                    score+=(pas - b.getBoard()[i+1].size())*2;
                 }
                 else if (i==Piece::wn.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 5;
+                    int ns = b.getBoard()[i].size();
+                    score+=(ns - b.getBoard()[i+1].size()) * 5;
+                    ps += (ns*2);
                 }
                 else if (i==Piece::wb.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 8;
+                    int bs = b.getBoard()[i].size();
+                    score+=(bs - b.getBoard()[i+1].size()) * 8;
+                    ps+= (bs*4);
                 }
                 else if (i==Piece::wr.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 8;
+                    int rs = b.getBoard()[i].size();
+                    score+=(rs - b.getBoard()[i+1].size()) * 8;
+                    ps+= (rs*4);
                 }
                 else if (i==Piece::wq.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i+1].size()) * 18;
+                    int qs = b.getBoard()[i].size();
+                    score+=(qs - b.getBoard()[i+1].size()) * 18;
+                    ps += (qs*6);
                 }
                 
                 i+=2;
             }
             score +=(wkprtct-bkprtct);
             score += (wcrtl - bcrtl);
+            score += ps;
             /**b.setTurn(PieceColor::Black);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
@@ -558,31 +603,43 @@ class myEngine: public Engine{
         }
         else{
             int i=2;
+            int ps =0;
             while(i<=12){
                 if(i==Piece::bp.numb()){
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size())*2;
+                    int pas = b.getBoard()[i].size();
+                    ps+= pas;
+                    score+=(pas - b.getBoard()[i-1].size())*2;
                 }
                 else if (i==Piece::bn.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 5;
+                    int ns = b.getBoard()[i].size();
+                    score+=(ns - b.getBoard()[i-1].size()) * 5;
+                    ps+=(ns*2);
                 }
                 else if (i==Piece::bb.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 8;
+                    int bs = b.getBoard()[i].size();
+                    score+=(bs - b.getBoard()[i-1].size()) * 8;
+                    ps += (bs*4);
                 }
                 else if (i==Piece::br.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 8;
+                    int rs = b.getBoard()[i].size();
+                    score+=(rs - b.getBoard()[i-1].size()) * 8;
+                    ps+=(rs*4);
                 }
                 else if (i==Piece::bq.numb())
                 {
-                    score+=(b.getBoard()[i].size() - b.getBoard()[i-1].size()) * 18;
+                    int qs = b.getBoard()[i].size();
+                    score+=(qs - b.getBoard()[i-1].size()) * 18;
+                    ps += (qs *6);
                 }
                 
                 i+=2;
             }
             score +=(bkprtct-wkprtct);
             score += (bcrtl - wcrtl);
+            score += ps;
             /**b.setTurn(PieceColor::White);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
