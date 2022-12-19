@@ -215,15 +215,18 @@ class myEngine: public Engine{
         return h;
     }
 
-    static int checkMove(int tor,int tof,PieceColor c,std::vector<int> cb,const int kingr,const int kingf){
+    static int checkMove(int piece,int tor,int tof,PieceColor c,std::vector<int> cb,const int kingr,const int kingf){
         int indx = tor*8 + tof;
         if(indx<0|| indx>63){
+            return 0;
+        }
+        if(piece <= 0 || piece>12){
             return 0;
         }
         const int score =5;
         const int bscore =2;
         if(c==PieceColor::White){
-            if (cb[indx]==Piece::wp.numb())
+            if ( piece==Piece::wp.numb())
             {
                 if((kingr-tor==1 && std::abs(kingf-tof)==1)){
                     return bscore;
@@ -231,7 +234,7 @@ class myEngine: public Engine{
             }
         }
         else{
-            if (cb[indx]==Piece::bp.numb())
+            if ( piece==Piece::bp.numb())
             {
                 if((tor-kingr==1 && std::abs(kingf-tof)==1)){
                     return bscore;
@@ -239,12 +242,12 @@ class myEngine: public Engine{
             }
 
         }
-        if(cb[indx]==Piece::wn.numb() || cb[indx]==Piece::bn.numb()){
+        if( piece==Piece::wn.numb() ||  piece==Piece::bn.numb()){
             if((std::abs(tor-kingr)==2 && std::abs(tof-kingf)==1) ||  (std::abs(tor-kingr)==1 && std::abs(tof-kingf)==2)){
                 return score;
             }
         }
-        if(cb[indx]==Piece::wr.numb() || cb[indx]==Piece::wq.numb() || cb[indx]==Piece::br.numb() || cb[indx]==Piece::bq.numb()){
+        if( piece==Piece::wr.numb() ||  piece==Piece::wq.numb() ||  piece==Piece::br.numb() ||  piece==Piece::bq.numb()){
             int diff = kingf-tof;
             int difr = kingr-tor;
             if(diff==0 ){
@@ -300,7 +303,7 @@ class myEngine: public Engine{
             }
             return 0;
         }
-        if(cb[indx]==Piece::wb.numb() || cb[indx]==Piece::wq.numb() || cb[indx]==Piece::bb.numb() || cb[indx]==Piece::bq.numb()){
+        if( piece==Piece::wb.numb() ||  piece==Piece::wq.numb() ||  piece==Piece::bb.numb() ||  piece==Piece::bq.numb()){
             int diff = kingf-tof;
             int difr = kingr-tor;
             const int ki = kingr*8 + kingf;
@@ -356,6 +359,8 @@ class myEngine: public Engine{
             }
             return false;
         }
+        int pieca= cb[a.from().index()];
+        int piecb = cb[b.from().index()];
         int score =0;
         if(cb[a.to().index()] >  cb[b.to().index()]){
             score += (cb[a.to().index()]);
@@ -371,7 +376,7 @@ class myEngine: public Engine{
             int kindx = kr*8+kf;
             if(kindx>=0 && kindx<64){
                 if(cb[kindx]==Piece::bk.numb()){
-                    score += (checkMove(a.to().rank(),a.to().file(),c,cb,kr,kf) - checkMove(b.to().rank(),b.to().file(),c,cb,kr,kf));
+                    score += (checkMove(pieca,a.to().rank(),a.to().file(),c,cb,kr,kf) - checkMove(piecb,b.to().rank(),b.to().file(),c,cb,kr,kf));
                 }
             }
             
@@ -384,13 +389,12 @@ class myEngine: public Engine{
             int kindx = kr*8+kf;
             if(kindx>=0 && kindx<64){
                 if(cb[kindx]==Piece::wk.numb()){
-                    score += (checkMove(a.to().rank(),a.to().file(),c,cb,kr,kf) - checkMove(b.to().rank(),b.to().file(),c,cb,kr,kf));
+                    score += (checkMove(pieca,a.to().rank(),a.to().file(),c,cb,kr,kf) - checkMove(piecb,b.to().rank(),b.to().file(),c,cb,kr,kf));
                 }
             }
             
         }
-        int pieca= cb[a.from().index()];
-        int piecb = cb[b.from().index()];
+        
         score += (distance(a.from().rank(),a.from().file(),a.to().rank(),a.to().file(),pieca)- distance(b.from().rank(),b.from().file(),b.to().rank(),b.to().file(),piecb));
         //score += (Square::HammingDist(a.from(),a.to())- Square::HammingDist(b.from(),b.to()));
         /**if(Square::HammingDist(a.from(),a.to())> Square::HammingDist(b.from(),b.to())){
@@ -521,12 +525,12 @@ class myEngine: public Engine{
 
         //center control
         int bi = 2*8+2;
-        int i =0;
+        int ii =0;
         int j =0;
         int wcrtl =0;
         int bcrtl =0;
-        while(i<4){
-            int s = bi + 8*i;
+        while(ii<4){
+            int s = bi + 8*ii;
             while(j<4){
                 if(b.getcBoard()[s]!=0){
                     int ctr =2;
@@ -548,7 +552,7 @@ class myEngine: public Engine{
                 s+=1;
             }
             j=0;
-            i+=1;
+            ii+=1;
         }
         
         if(c==PieceColor::White){
