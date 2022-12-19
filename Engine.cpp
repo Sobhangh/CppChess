@@ -34,7 +34,7 @@ class myEngine: public Engine{
     ) override {
         (void)timeInfo;
         auto b =  Board(board);
-        auto ngmx = negamax(b,5,-1*INF,INF,1);
+        auto ngmx = negamax(b,4,-1*INF,INF,1);
         auto p = PrincipalVariation();
         /**auto v = Board::MoveVec();
         for(auto it=std::get<0>(ngmx).size()-1;it>=0;--it){
@@ -85,7 +85,14 @@ class myEngine: public Engine{
         
         std::vector<Move> childNodes =std::vector<Move>();
         generateMoves(childNodes,node);
-        orderMoves(childNodes,node.turn(),node.getcBoard(),ksq.value().rank(),ksq.value().file());
+        auto eps = node.enPassantSquare();
+        if(eps.has_value()){
+            orderMoves(eps.value().index(),childNodes,node.turn(),node.getcBoard(),ksq.value().rank(),ksq.value().file());
+        }
+        else{
+            orderMoves(-2,childNodes,node.turn(),node.getcBoard(),ksq.value().rank(),ksq.value().file());
+        }
+        
         auto value = -1*INF;
         std::tuple<std::vector<Move>,int> pvmax;
         bool allcheck =true;
@@ -345,8 +352,8 @@ class myEngine: public Engine{
 
     //int surroudning
     //give the color: if move is towards the other side then it is better than towrards your own side
-    void orderMoves(std::vector<Move>& boardVc, PieceColor c,std::vector<int> cb,const int kr,const int kf){
-        std::sort(boardVc.begin(),boardVc.end(),[c,cb,kr,kf](Move& a,Move& b){
+    void orderMoves(const int epsi,std::vector<Move>& boardVc, PieceColor c,std::vector<int> cb,const int kr,const int kf){
+        std::sort(boardVc.begin(),boardVc.end(),[epsi,c,cb,kr,kf](Move& a,Move& b){
         if(a.promotion().has_value() && !b.promotion().has_value()){
             return true;
         }
@@ -359,6 +366,7 @@ class myEngine: public Engine{
             }
             return false;
         }
+
         int pieca= cb[a.from().index()];
         int piecb = cb[b.from().index()];
         int score =0;
@@ -367,6 +375,16 @@ class myEngine: public Engine{
         }
         else if(cb[a.to().index()] <  cb[b.to().index()]){
             score -= (cb[b.to().index()]);
+        }
+        if(pieca == Piece::wp.numb() || pieca == Piece::wp.numb() ){
+            if(a.to().index()==epsi){
+                score+=5;
+            }
+        }
+        if(piecb == Piece::wp.numb() || piecb == Piece::wp.numb() ){
+            if(b.to().index()==epsi){
+                score-=5;
+            }
         }
         //score += (cb[a.to().index()]-cb[b.to().index()]);
         if(c == PieceColor::White){
