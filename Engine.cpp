@@ -554,43 +554,43 @@ class myEngine: public Engine{
         if(c==PieceColor::White){
             int i=1;
             //"contextualizing" the differences. Not losing pieces is beter.
-            int ps =0;
+            //int ps =0;
             while(i<12){
                 if(i==Piece::wp.numb()){
                     int pas = b.getBoard()[i].size();;
-                    ps += pas;
+                    //ps += pas;
                     score+=(pas - b.getBoard()[i+1].size())*2;
                 }
                 else if (i==Piece::wn.numb())
                 {
                     int ns = b.getBoard()[i].size();
                     score+=(ns - b.getBoard()[i+1].size()) * 5;
-                    ps += (ns*2);
+                    //ps += (ns*2);
                 }
                 else if (i==Piece::wb.numb())
                 {
                     int bs = b.getBoard()[i].size();
                     score+=(bs - b.getBoard()[i+1].size()) * 8;
-                    ps+= (bs*4);
+                    //ps+= (bs*4);
                 }
                 else if (i==Piece::wr.numb())
                 {
                     int rs = b.getBoard()[i].size();
                     score+=(rs - b.getBoard()[i+1].size()) * 8;
-                    ps+= (rs*4);
+                    //ps+= (rs*4);
                 }
                 else if (i==Piece::wq.numb())
                 {
                     int qs = b.getBoard()[i].size();
                     score+=(qs - b.getBoard()[i+1].size()) * 18;
-                    ps += (qs*6);
+                    //ps += (qs*6);
                 }
                 
                 i+=2;
             }
             score +=(wkprtct-bkprtct);
             score += (wcrtl - bcrtl);
-            score += ps;
+            //score += ps;
             /**b.setTurn(PieceColor::Black);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
@@ -603,43 +603,43 @@ class myEngine: public Engine{
         }
         else{
             int i=2;
-            int ps =0;
+            //int ps =0;
             while(i<=12){
                 if(i==Piece::bp.numb()){
                     int pas = b.getBoard()[i].size();
-                    ps+= pas;
+                    //ps+= pas;
                     score+=(pas - b.getBoard()[i-1].size())*2;
                 }
                 else if (i==Piece::bn.numb())
                 {
                     int ns = b.getBoard()[i].size();
                     score+=(ns - b.getBoard()[i-1].size()) * 5;
-                    ps+=(ns*2);
+                    //ps+=(ns*2);
                 }
                 else if (i==Piece::bb.numb())
                 {
                     int bs = b.getBoard()[i].size();
                     score+=(bs - b.getBoard()[i-1].size()) * 8;
-                    ps += (bs*4);
+                    //ps += (bs*4);
                 }
                 else if (i==Piece::br.numb())
                 {
                     int rs = b.getBoard()[i].size();
                     score+=(rs - b.getBoard()[i-1].size()) * 8;
-                    ps+=(rs*4);
+                    //ps+=(rs*4);
                 }
                 else if (i==Piece::bq.numb())
                 {
                     int qs = b.getBoard()[i].size();
                     score+=(qs - b.getBoard()[i-1].size()) * 18;
-                    ps += (qs *6);
+                    //ps += (qs *6);
                 }
                 
                 i+=2;
             }
             score +=(bkprtct-wkprtct);
             score += (bcrtl - wcrtl);
-            score += ps;
+            //score += ps;
             /**b.setTurn(PieceColor::White);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
