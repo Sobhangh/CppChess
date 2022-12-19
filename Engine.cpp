@@ -486,6 +486,38 @@ class myEngine: public Engine{
                 }
             }
         }
+
+        //center control
+        int bi = 2*8+2;
+        int i =0;
+        int j =0;
+        int wcrtl =0;
+        int bcrtl =0;
+        while(i<4){
+            int s = bi + 8*i;
+            while(j<4){
+                if(b.getcBoard()[s]!=0){
+                    int ctr =2;
+                    if(b.getcBoard()[s] == Piece::wp.numb() || b.getcBoard()[s] == Piece::bp.numb()){
+                        ctr = 1;
+                    }
+                    else if(b.getcBoard()[s] == Piece::wk.numb() || b.getcBoard()[s] == Piece::bk.numb()){
+                        ctr = 0;
+                    }
+
+                    if(Piece::getColor(b.getcBoard()[s])==PieceColor::Black){
+                        bcrtl += ctr;
+                    }
+                    else{
+                        wcrtl += ctr;
+                    }
+                }
+                j+=1;
+                s+=1;
+            }
+            j=0;
+            i+=1;
+        }
         
         if(c==PieceColor::White){
             int i=1;
@@ -513,6 +545,7 @@ class myEngine: public Engine{
                 i+=2;
             }
             score +=(wkprtct-bkprtct);
+            score += (wcrtl - bcrtl);
             /**b.setTurn(PieceColor::Black);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
@@ -549,6 +582,7 @@ class myEngine: public Engine{
                 i+=2;
             }
             score +=(bkprtct-wkprtct);
+            score += (bcrtl - wcrtl);
             /**b.setTurn(PieceColor::White);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
