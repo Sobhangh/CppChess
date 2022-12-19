@@ -55,7 +55,7 @@ class myEngine: public Engine{
 
     
     const int INF = 1000000;
-    const int CHECK = 100;
+    const int CHECK = 50;
 
     std::tuple<std::vector<Move>,int> negamax(Board& node, int depth, int a, int b, int color) {
         if (depth == 0){ //or node is a terminal node then
@@ -445,6 +445,47 @@ class myEngine: public Engine{
                 score+= CHECK;
             }
         }
+        //king protection
+        int wkprtct = 0;
+        int wki = b.getBoard()[Piece::wk.numb()][0];
+        int wkif =wki+8;
+        if(wkif<64){
+            if(b.getcBoard()[wkif]!=0 && Piece::getColor(b.getcBoard()[wkif])==PieceColor::White){
+                wkprtct += 5;
+            }
+            int wkil = wkif-1;
+            if(wkif%8!=0){
+                if(b.getcBoard()[wkil]!=0 && Piece::getColor(b.getcBoard()[wkil])==PieceColor::White){
+                    wkprtct += 2;
+                }
+            }
+            int wkir = wkif+1;
+            if(wkif%8!=7){
+                if(b.getcBoard()[wkir]!=0 && Piece::getColor(b.getcBoard()[wkir])==PieceColor::White){
+                    wkprtct += 2;
+                }
+            }
+        }
+        int bkprtct = 0;
+        int bki = b.getBoard()[Piece::bk.numb()][0];
+        int bkif =bki-8;
+        if(bkif>=0){
+            if(b.getcBoard()[bkif]!=0 && Piece::getColor(b.getcBoard()[bkif])==PieceColor::Black){
+                bkprtct += 5;
+            }
+            int bkil = bkif-1;
+            if(bkif%8!=0){
+                if(b.getcBoard()[bkil]!=0 && Piece::getColor(b.getcBoard()[bkil])==PieceColor::Black){
+                    bkprtct += 2;
+                }
+            }
+            int bkir = bkif+1;
+            if(bkif%8!=7){
+                if(b.getcBoard()[bkir]!=0 && Piece::getColor(b.getcBoard()[bkir])==PieceColor::Black){
+                    bkprtct += 2;
+                }
+            }
+        }
         
         if(c==PieceColor::White){
             int i=1;
@@ -471,6 +512,7 @@ class myEngine: public Engine{
                 
                 i+=2;
             }
+            score +=(wkprtct-bkprtct);
             /**b.setTurn(PieceColor::Black);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
@@ -479,6 +521,7 @@ class myEngine: public Engine{
             auto mobility = std::vector<Move>();
             generateMoves(mobility,b);
             score += (mobility.size())/2;*/
+
         }
         else{
             int i=2;
@@ -505,6 +548,7 @@ class myEngine: public Engine{
                 
                 i+=2;
             }
+            score +=(bkprtct-wkprtct);
             /**b.setTurn(PieceColor::White);
             auto opmobility = std::vector<Move>();
             generateMoves(opmobility,b);
