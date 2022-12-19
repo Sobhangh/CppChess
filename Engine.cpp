@@ -377,12 +377,12 @@ class myEngine: public Engine{
             score -= (cb[b.to().index()]);
         }
         if(pieca == Piece::wp.numb() || pieca == Piece::wp.numb() ){
-            if(a.to().index()==epsi){
+            if((int)a.to().index()==epsi){
                 score+=5;
             }
         }
         if(piecb == Piece::wp.numb() || piecb == Piece::wp.numb() ){
-            if(b.to().index()==epsi){
+            if((int)b.to().index()==epsi){
                 score-=5;
             }
         }
