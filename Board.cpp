@@ -658,25 +658,40 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
                         if(Piece::getColor(pic) == tu){
                             break;
                         }
-                        if(pic == r || pic == q){
+                        if(pic == r){
                             if((i==0) || j==0){
                                 return indx;
                             }
+                            break;
                         }
-                        if (pic == b || pic == q)
+                        else if (pic == b  )
                         {
                             if((i!=0) && j!=0){
                                 return indx;
                             }
+                            break;
                         }
-                        else if (pic==p && s==1)
+                        else if(pic == q){
+                            if((i==0) || j==0){
+                                return indx;
+                            }
+                            if((i!=0) && j!=0){
+                                return indx;
+                            }
+                            break;
+                        }
+                        else if (pic==p)
                         {
+                            if(s!=1){
+                                break;
+                            }
                             if(m==1 && i==1 && j!=0){
                                 return indx;
                             }
                             if(m==0 && i==-1 && j!=0){
                                 return indx;
                             }
+                            break;
                         }
                         
                         //king checking each other????
