@@ -34,7 +34,7 @@ class myEngine: public Engine{
     ) override {
         (void)timeInfo;
         auto b =  Board(board);
-        auto ngmx = negamax(b,4,-1*INF,INF,1);
+        auto ngmx = negamax(b,5,-1*INF,INF,1);
         auto p = PrincipalVariation();
         /**auto v = Board::MoveVec();
         for(auto it=std::get<0>(ngmx).size()-1;it>=0;--it){
@@ -235,7 +235,7 @@ class myEngine: public Engine{
             return 0;
         }
         const int score =5;
-        const int bscore =2;
+        const int bscore =3;
         if(c==PieceColor::White){
             if ( piece==Piece::wp.numb())
             {
@@ -373,6 +373,8 @@ class myEngine: public Engine{
 
         int pieca= cb[a.from().index()];
         int piecb = cb[b.from().index()];
+        int hita = cb[a.to().index()];
+        int hitb = cb[b.to().index()];
         int score =0;
         if(cb[a.to().index()] >  cb[b.to().index()]){
             score += (cb[a.to().index()]);
@@ -390,6 +392,20 @@ class myEngine: public Engine{
                 score-=5;
             }
         }
+        //hitting a pawn that is close to promotion.
+        if(hita == Piece::wp.numb() && a.to().rank()==6){
+            score +=3;
+        }
+        if(hitb == Piece::wp.numb() && b.to().rank()==6){
+            score -=3;
+        }
+        if(hita == Piece::bp.numb() && a.to().rank()==1){
+            score +=3;
+        }
+        if(hitb == Piece::bp.numb() && b.to().rank()==1){
+            score -=3;
+        }
+
         //score += (cb[a.to().index()]-cb[b.to().index()]);
         if(c == PieceColor::White){
             int cda = std::abs((int)a.to().rank()-5);
