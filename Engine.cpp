@@ -478,10 +478,7 @@ class myEngine: public Engine{
         if(wkif<64){
             if(b.getcBoard()[wkif]!=0 ){
                 if(Piece::getColor(b.getcBoard()[wkif])==PieceColor::White){
-                    wkprtct += 4;
-                }
-                else{
-                    wkprtct -=3;
+                    wkprtct += 3;
                 }
                 
             }
@@ -489,10 +486,7 @@ class myEngine: public Engine{
             if(wkif%8!=0){
                 if(b.getcBoard()[wkil]!=0){
                     if(Piece::getColor(b.getcBoard()[wkil])==PieceColor::White){
-                        wkprtct += 2;
-                    }
-                    else{
-                        wkprtct -=2;
+                        wkprtct += 1;
                     }
                     
                 }
@@ -501,10 +495,7 @@ class myEngine: public Engine{
             if(wkif%8!=7){
                 if(b.getcBoard()[wkir]!=0){
                     if(Piece::getColor(b.getcBoard()[wkir])==PieceColor::White){
-                        wkprtct += 2;
-                    }
-                    else{
-                        wkprtct -=2;
+                        wkprtct += 1;
                     }
                 }
             }
@@ -515,14 +506,14 @@ class myEngine: public Engine{
         if(bkif>=0){
             if(b.getcBoard()[bkif]!=0){
                 if(Piece::getColor(b.getcBoard()[bkif])==PieceColor::Black){
-                    bkprtct += 4;
+                    bkprtct += 3;
                 }
             }
             int bkil = bkif-1;
             if(bkif%8!=0){
                 if(b.getcBoard()[bkil]!=0){
                     if(Piece::getColor(b.getcBoard()[bkil])==PieceColor::Black){
-                        bkprtct += 2;
+                        bkprtct += 1;
                     }
                 }
             }
@@ -530,7 +521,7 @@ class myEngine: public Engine{
             if(bkif%8!=7){
                 if(b.getcBoard()[bkir]!=0){
                     if(Piece::getColor(b.getcBoard()[bkir])==PieceColor::Black){
-                        bkprtct += 2;
+                        bkprtct += 1;
                     }
                 }
             }
@@ -542,13 +533,18 @@ class myEngine: public Engine{
         int j =0;
         int wcrtl =0;
         int bcrtl =0;
+        int wpawn =0;
+        int bpawn =0;
         while(ii<4){
             int s = bi + 8*ii;
             while(j<4){
                 if(b.getcBoard()[s]!=0){
-                    int ctr =2;
-                    if(b.getcBoard()[s] == Piece::wp.numb() || b.getcBoard()[s] == Piece::bp.numb()){
-                        ctr = 1;
+                    int ctr =1;
+                    if(b.getcBoard()[s] == Piece::wp.numb()  ){
+                        wpawn+=1;
+                    }
+                    else if(b.getcBoard()[s] == Piece::bp.numb()){
+                        bpawn+=1;
                     }
                     else if(b.getcBoard()[s] == Piece::wk.numb() || b.getcBoard()[s] == Piece::bk.numb()){
                         ctr = 0;
@@ -567,6 +563,8 @@ class myEngine: public Engine{
             j=0;
             ii+=1;
         }
+        wcrtl += (wpawn/2);
+        bcrtl += (bpawn/2);
         
         if(c==PieceColor::White){
             int i=1;
@@ -576,7 +574,7 @@ class myEngine: public Engine{
                 if(i==Piece::wp.numb()){
                     int pas = b.getBoard()[i].size();;
                     //ps += pas;
-                    score+=(pas - b.getBoard()[i+1].size());
+                    score+=(pas - b.getBoard()[i+1].size())*2;
                 }
                 else if (i==Piece::wn.numb())
                 {
@@ -625,7 +623,7 @@ class myEngine: public Engine{
                 if(i==Piece::bp.numb()){
                     int pas = b.getBoard()[i].size();
                     //ps+= pas;
-                    score+=(pas - b.getBoard()[i-1].size());
+                    score+=(pas - b.getBoard()[i-1].size())*2;
                 }
                 else if (i==Piece::bn.numb())
                 {
