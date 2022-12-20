@@ -517,18 +517,12 @@ class myEngine: public Engine{
                 if(Piece::getColor(b.getcBoard()[bkif])==PieceColor::Black){
                     bkprtct += 4;
                 }
-                else{
-                    bkprtct -=3;
-                }
             }
             int bkil = bkif-1;
             if(bkif%8!=0){
                 if(b.getcBoard()[bkil]!=0){
                     if(Piece::getColor(b.getcBoard()[bkil])==PieceColor::Black){
                         bkprtct += 2;
-                    }
-                    else{
-                        bkprtct -=2;
                     }
                 }
             }
@@ -537,9 +531,6 @@ class myEngine: public Engine{
                 if(b.getcBoard()[bkir]!=0){
                     if(Piece::getColor(b.getcBoard()[bkir])==PieceColor::Black){
                         bkprtct += 2;
-                    }
-                    else{
-                        bkprtct -=2;
                     }
                 }
             }
