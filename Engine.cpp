@@ -478,10 +478,10 @@ class myEngine: public Engine{
         if(wkif<64){
             if(b.getcBoard()[wkif]!=0 ){
                 if(Piece::getColor(b.getcBoard()[wkif])==PieceColor::White){
-                    wkprtct += 5;
+                    wkprtct += 4;
                 }
                 else{
-                    wkprtct -=5;
+                    wkprtct -=3;
                 }
                 
             }
@@ -515,10 +515,10 @@ class myEngine: public Engine{
         if(bkif>=0){
             if(b.getcBoard()[bkif]!=0){
                 if(Piece::getColor(b.getcBoard()[bkif])==PieceColor::Black){
-                    bkprtct += 5;
+                    bkprtct += 4;
                 }
                 else{
-                    bkprtct -=5;
+                    bkprtct -=3;
                 }
             }
             int bkil = bkif-1;

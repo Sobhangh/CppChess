@@ -360,10 +360,10 @@ void Board::makeMove(const Move& move) {
                 setEnPassantSquare(std::nullopt);
                 return;
             }
-            Board::replacePiecen(fromi,toi,movedPiece.value());
             if(hitPiece.has_value()){
                  removePiecen(toi,hitPiece.value());
             }
+            Board::replacePiecen(fromi,toi,movedPiece.value());
         }
         else{
             if(hitPiece.has_value()){
