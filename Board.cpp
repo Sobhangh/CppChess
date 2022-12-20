@@ -606,15 +606,14 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
     int b = Piece::wb.numb();
     int p = Piece::wp.numb();
     //our king
-    int k = Piece::bk.numb();
+    int k = Piece::wk.numb();
     if(m==1){
         r+=1;
         q+=1;
         n+=1;
         p+=1;
         b+=1;
-
-        k-=1;
+        k+=1;
     }
     int ksqrr = sq.rank();
     int ksqrf= sq.file();
@@ -692,6 +691,11 @@ int Board::inCheck(PieceColor tu,Square& sq) const{
                                 return indx;
                             }
                             break;
+                        }
+                        else if (pic ==k){
+                            if(s==1){
+                                return indx;
+                            }
                         }
                         break;
                         
