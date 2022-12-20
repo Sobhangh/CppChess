@@ -55,7 +55,7 @@ class myEngine: public Engine{
 
     
     const int INF = 1000000;
-    const int CHECK = 50;
+    const int CHECK = 20;
 
     std::tuple<std::vector<Move>,int> negamax(Board& node, int depth, int a, int b, int color) {
         if (depth == 0){ //or node is a terminal node then
