@@ -576,7 +576,7 @@ class myEngine: public Engine{
                 if(i==Piece::wp.numb()){
                     int pas = b.getBoard()[i].size();;
                     //ps += pas;
-                    score+=(pas - b.getBoard()[i+1].size())*2;
+                    score+=(pas - b.getBoard()[i+1].size());
                 }
                 else if (i==Piece::wn.numb())
                 {
@@ -625,7 +625,7 @@ class myEngine: public Engine{
                 if(i==Piece::bp.numb()){
                     int pas = b.getBoard()[i].size();
                     //ps+= pas;
-                    score+=(pas - b.getBoard()[i-1].size())*2;
+                    score+=(pas - b.getBoard()[i-1].size());
                 }
                 else if (i==Piece::bn.numb())
                 {
