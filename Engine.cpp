@@ -54,6 +54,7 @@ class myEngine: public Engine{
     }
 
     
+    
     const int INF = 1000000;
     const int CHECK = 20;
 
@@ -447,7 +448,24 @@ class myEngine: public Engine{
     );
     }
 
-
+    bool allInChk(Board& b,PieceColor c,Square::Optional ksq){
+        b.setTurn(c);
+        std::vector<Move> childNodes =std::vector<Move>();
+        generateMoves(childNodes,b);
+        bool allcheck = true;
+        for(auto child:childNodes){
+            auto nb = Board(b);
+            nb.makeMove(child);
+            if(nb.inCheck(PieceColor::White, ksq.value())==-1){
+                allcheck =false;
+                break;
+            }
+        }
+        if(allcheck){
+            return true;
+        }
+        return false;
+    }
 
     int heuristic(Board& b,PieceColor c){
         int score =0;
@@ -458,7 +476,12 @@ class myEngine: public Engine{
             }
             Square::Optional ksq = Square::fromIndex(ksqarr[0]);
             if(b.inCheck(PieceColor::White, ksq.value())!=-1){
-                score+= -1*CHECK;
+                auto nb = Board(b);
+                bool allcheck = allInChk(nb,PieceColor::White,ksq);
+                if(allcheck){
+                    return -1*INF;
+                }
+                score+= (-1*5);
             }
             auto bksqarr =  b.getBoard()[Piece::bk.numb()];
             if(bksqarr.size()==0){
@@ -466,7 +489,7 @@ class myEngine: public Engine{
             }
             Square::Optional bksq = Square::fromIndex(bksqarr[0]);
             if(b.inCheck(PieceColor::Black, bksq.value())!=-1){
-                score+= CHECK;
+                score+= 10*CHECK;
             }
         }
         else{
@@ -476,7 +499,13 @@ class myEngine: public Engine{
             }
             Square::Optional ksq = Square::fromIndex(ksqarr[0]);
             if(b.inCheck(PieceColor::Black, ksq.value())!=-1){
-                score+= -1*CHECK;
+                auto nb = Board(b);
+                bool allcheck = allInChk(nb,PieceColor::Black,ksq);
+                if(allcheck){
+                    return -1*INF;
+                }
+                score+= (-1*5);
+                //score+= -1*CHECK;
             }
             auto bksqarr = b.getBoard()[Piece::wk.numb()];
             if(bksqarr.size()==0){
@@ -484,7 +513,7 @@ class myEngine: public Engine{
             }
             Square::Optional bksq = Square::fromIndex(bksqarr[0]);
             if(b.inCheck(PieceColor::White, bksq.value())!=-1){
-                score+= CHECK;
+                score+= 10*CHECK;
             }
         }
         //king protection:front left and right.
@@ -748,4 +777,25 @@ void Engine::setHashSize(std::size_t) {}*/
                     return pv;
                 }
             }
-        }*/
+        }
+        
+        if(depth==5){
+                doNOthing(depth);
+            }
+            if(depth==4){
+                doNOthing(depth);
+            }
+            if(depth==3){
+                doNOthing(depth);
+            }
+            if(depth==2){
+                doNOthing(depth);
+            }
+            if(depth==1){
+                doNOthing(depth);
+            }
+    int doNOthing(int a){
+        return a;
+    }
+        
+        */
