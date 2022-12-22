@@ -53,7 +53,7 @@ class myEngine: public Engine{
         return p;
     }
 
-    
+   
     
     const int INF = 1000000;
     const int CHECK = 20;
@@ -456,7 +456,7 @@ class myEngine: public Engine{
         for(auto child:childNodes){
             auto nb = Board(b);
             nb.makeMove(child);
-            if(nb.inCheck(PieceColor::White, ksq.value())==-1){
+            if(nb.inCheck(c, ksq.value())==-1){
                 allcheck =false;
                 break;
             }
