@@ -385,12 +385,12 @@ class myEngine: public Engine{
         }
         if(pieca == Piece::wp.numb() || pieca == Piece::wp.numb() ){
             if((int)a.to().index()==epsi){
-                score+=5;
+                score+=8;
             }
         }
         if(piecb == Piece::wp.numb() || piecb == Piece::wp.numb() ){
             if((int)b.to().index()==epsi){
-                score-=5;
+                score-=8;
             }
         }
         //hitting a pawn that is close to promotion.
