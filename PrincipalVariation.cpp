@@ -33,7 +33,19 @@ void PrincipalVariation::makeMoveVc(std::vector<Move> p){
 void PrincipalVariation::setMate(bool mt){
     m=mt;
 }
+
+Move::Optional PrincipalVariation::getMove(int i) const {
+    if(i>=0 && i<this->length()){
+        return pv[i];
+    }
+    return std::nullopt;
+}
+
 std::ostream& operator<<(std::ostream& os, const PrincipalVariation& pv) {
-    (void)pv;
-    return os;
+    std::string s = "";
+    int l = pv.length();
+    for(int it = 0; it < l;++it){
+        s+= pv.getMove(it).value().toUci();
+    }
+    return os<<s;
 }

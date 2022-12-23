@@ -22,6 +22,52 @@ int Piece::getNumEven(PieceColor c){
     return 0;
 }
 
+
+char Piece::getCharFNum(int num){
+    if(num<1 || num>12){
+        return '0';
+    }
+    if(num%2==1){
+        if(num==1){
+            return 'P';
+        }
+        else if(num==3){
+            return 'N';
+        }
+        else if(num==5){
+            return 'B';
+        }
+        else if(num==7){
+            return 'R';
+        }
+        else if(num==9){
+            return 'Q';
+        }
+        else if(num==11){
+            return 'K';
+        }
+    }
+    else{
+        if(num==2){
+            return 'p';
+        }
+        else if(num==4){
+            return 'n';
+        }
+        else if(num==6){
+            return 'b';
+        }
+        else if(num==8){
+            return 'r';
+        }
+        else if(num==10){
+            return 'q';
+        }
+        else if(num==12){
+            return 'k';
+        }
+    }
+}
 int Piece::getNum(PieceColor color, PieceType type){
     if(color == PieceColor::White){
         if(type == PieceType::Pawn){

@@ -17,6 +17,7 @@ public:
          const std::optional<PieceType>& promotion = std::nullopt);
 
     static Optional fromUci(const std::string& uci);
+    std::string toUci();
 
     Square from() const;
     Square to() const;

@@ -851,15 +851,15 @@ void Board::setHScore(int s){
 std::ostream& operator<<(std::ostream& os, const Board& board) {
     auto b = board.getBoard();
     std::string s = "";
-    /**for(auto it = b.begin(); it != b.end();++it){
-        s +=  (it->first + "={");
+    for(auto it = b.begin(); it != b.end();++it){
+        s +=  (Piece::getCharFNum(it->first) + "={");
             unsigned int vecSize = (it->second).size();
             for(unsigned int i = 0; i < vecSize; i++)
             {
-                s+=( (*(it->second)[i]).getName() + ",");
+                s+=( (char)((it->second)[i]) + ",");
             }
             s+="}";
         
-    }*/
+    }
     return os << s;
 }

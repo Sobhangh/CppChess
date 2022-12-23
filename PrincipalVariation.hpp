@@ -22,6 +22,7 @@ public:
     void makeMoveVc(std::vector<Move> pv);
     void setScore(int s);
     void setMate(bool m);
+    Move::Optional getMove(int i) const;
 private:
     int s;
     bool m;

@@ -36,6 +36,17 @@ Move::Optional Move::fromUci(const std::string& uci) {
     return std::nullopt;
 }
 
+std::string Move::toUci(){
+    std::string s = "";
+    s += this->from().getName();
+    s += this->to().getName();
+    if(this->promotion().has_value()){
+        s += Piece::typeChar(this->promotion().value());
+    }
+    //const std::string a =s;
+    return s;
+}
+
 Square Move::from() const {
     return f;
 }
