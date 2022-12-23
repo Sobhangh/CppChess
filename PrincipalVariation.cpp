@@ -35,7 +35,7 @@ void PrincipalVariation::setMate(bool mt){
 }
 
 Move::Optional PrincipalVariation::getMove(int i) const {
-    if(i>=0 && i<this->length()){
+    if(i>=0 && i<(int)this->length()){
         return pv[i];
     }
     return std::nullopt;

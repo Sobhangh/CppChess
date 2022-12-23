@@ -34,6 +34,7 @@ public:
     int numb() const;
     static PieceColor getColor(int num) ;
     static int getNumEven(PieceColor c);
+    static char getCharFNum(int num);
     //static PieceType getType(int num) ;
 private:
     PieceColor c;
