@@ -586,9 +586,11 @@ class myEngine: public Engine{
                 if(b.getcBoard()[s]!=0){
                     int ctr =1;
                     if(b.getcBoard()[s] == Piece::wp.numb()  ){
+                        ctr=0;
                         wpawn+=1;
                     }
                     else if(b.getcBoard()[s] == Piece::bp.numb()){
+                        ctr=0;
                         bpawn+=1;
                     }
                     else if(b.getcBoard()[s] == Piece::wk.numb() || b.getcBoard()[s] == Piece::bk.numb()){
