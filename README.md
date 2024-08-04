@@ -1,5 +1,5 @@
 [TOC]
-
+This is a project for the course Comparative study of programming languages. The goal is the developement of a chess engine in C++. Following is the readme provided by the professors.
 # Introduction
 
 In this project, the goal is to develop a  [*chess engine*][chess engine] in C++.
